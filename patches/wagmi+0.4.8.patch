@@ -12,7 +12,7 @@ index a1d7ee1..bb28a82 100644
  function _interopNamespace(e) {
    if (e && e.__esModule) return e;
 diff --git a/node_modules/wagmi/dist/wagmi.cjs.prod.js b/node_modules/wagmi/dist/wagmi.cjs.prod.js
-index a1d7ee1..a3c8f2e 100644
+index a1d7ee1..bb28a82 100644
 --- a/node_modules/wagmi/dist/wagmi.cjs.prod.js
 +++ b/node_modules/wagmi/dist/wagmi.cjs.prod.js
 @@ -8,7 +8,7 @@ var reactQuery = require('react-query');
@@ -20,12 +20,12 @@ index a1d7ee1..a3c8f2e 100644
  var createWebStoragePersister = require('react-query/createWebStoragePersister');
  var ethers = require('ethers/lib/ethers');
 -var index_js = require('use-sync-external-store/shim/index.js');
-+var index_js = require('use-sync-external-store');
++var index_js = require('use-sync-external-store/shim');
  
  function _interopNamespace(e) {
    if (e && e.__esModule) return e;
 diff --git a/node_modules/wagmi/dist/wagmi.esm.js b/node_modules/wagmi/dist/wagmi.esm.js
-index 1ac442a..a01c757 100644
+index 1ac442a..ca8cf0c 100644
 --- a/node_modules/wagmi/dist/wagmi.esm.js
 +++ b/node_modules/wagmi/dist/wagmi.esm.js
 @@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider, useQueryClient, useIsRestoring, useQu
@@ -33,7 +33,7 @@ index 1ac442a..a01c757 100644
  import { createWebStoragePersister } from 'react-query/createWebStoragePersister';
  import { BigNumber } from 'ethers/lib/ethers';
 -import { useSyncExternalStore } from 'use-sync-external-store/shim/index.js';
-+import { useSyncExternalStore } from 'use-sync-external-store';
++import { useSyncExternalStore } from 'use-sync-external-store/shim';
  
  const findAndReplace = (cacheRef, _ref) => {
    let {
