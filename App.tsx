@@ -1,4 +1,6 @@
 import './shim'
+import 'react-native-gesture-handler';
+
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
 import { StyleSheet, Button, Text, View } from 'react-native'
@@ -14,11 +16,21 @@ import Constants from 'expo-constants';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import HomeView from './components/Home'
+import HomeView from './components/Home';
+import DAOView from './components/DAO';
+import ProposalView from './components/Proposal';
 
 const ALCHEMY_KEY = Constants?.manifest?.extra?.alchemyKey;
+
+import { LogBox } from 'react-native';
+
+// God pls forbid
+LogBox.ignoreLogs([ 'Non-serializable values were found in the navigation state', ]);
 
 function SettingsScreen() {
   return (
@@ -29,7 +41,9 @@ function SettingsScreen() {
 }
 
 const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
 
+ 
 const asyncStoragePersistor = createAsyncStoragePersister({
   storage: AsyncStorage,
 })
@@ -96,6 +110,34 @@ const Navigation = () => {
     </>
   )
 
+  const HomeStackComponent = () => {
+    return (
+      <HomeStack.Navigator>
+        <HomeStack.Screen 
+          name="Home"
+          component={HomeView} 
+           options={{
+            headerRight: HeaderRight
+          }}        />
+        <HomeStack.Screen 
+          name="DAO" 
+          component={DAOView}
+          options={{
+            title:" "
+          }}
+       />
+      <HomeStack.Screen
+        name="Proposal"
+        component={ProposalView}
+        options={{
+          presentation: 'modal',
+          headerShown: false
+        }} 
+      />
+      </HomeStack.Navigator>
+    )
+  }
+
   return (
     <NavigationContainer>
       <Tab.Navigator 
@@ -120,9 +162,9 @@ const Navigation = () => {
     >
         <Tab.Screen 
           name="Home" 
-          component={HomeView}
+          component={HomeStackComponent}
           options={{
-            headerRight: HeaderRight
+            headerShown: false
           }}
          />
         <Tab.Screen name="Settings" component={SettingsScreen} />
