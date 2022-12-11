@@ -1,0 +1,73 @@
+import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {BigNumber} from 'ethers';
+
+const ProposalCard = ({proposal, navigation}: any) => {
+  const proposalClicked = () => {
+    navigation.push('Proposal', {proposal, navigation});
+  }
+  // Current Winner
+  // Vote Distribution
+  // Time Left
+  // Executed or not
+  // quorum
+  
+  const census = BigNumber.from(proposal.census)
+  const voteCount = BigNumber.from(proposal.voteCount);
+  const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).div(voteCount).mul(100).toNumber();
+  const abstainVotes = !voteCount.eq(0) && BigNumber.from(proposal.abstain).div(voteCount).mul(100).toNumber();
+  const noVotes = !voteCount.eq(0) && BigNumber.from(proposal.no).div(voteCount).mul(100).toNumber();
+  const censusPercentage = !census.eq(0) && !voteCount.eq(0) ? voteCount.div(census).mul(100).toNumber() : 0;
+  
+  const VoteDistributionBar = () => (
+    <View className="flex-1 flex-row border rounded-md border-gray-300 shadow-md mt-2 mb-2">
+      <View 
+          className="bg-green-400 pt-3 pb-3 rounded-l-md" 
+          style={{width: yesVotes+'%'}}
+      />
+      <View 
+        className="bg-red-400 pt-3 pb-3"
+          style={{width: noVotes+'%'}}
+      />
+      <View 
+        className="bg-gray-400 pt-3 pb-3 rounded-r-md"
+        style={{width: abstainVotes+'%'}}
+      />
+    </View>
+  )
+
+  return (
+    <TouchableWithoutFeedback
+      onPress={proposalClicked}>
+      <View className="block m-2 p-4 bg-white border border-gray-200 rounded-lg shadow-md">
+        <View className="flex-row items-center">
+          <Ionicons name="megaphone-outline" size="20" color="black" />
+          <Text className="text-md text-xl font-bold pl-1">{proposal.title}</Text>
+        </View>
+
+      <View className="flex-row">
+        <View className="flex-1">
+          {proposal.voteCount !== "0" && <VoteDistributionBar />}
+          <View className="flex-row justify-between pt-3">
+            <View>
+            { proposal.open 
+                ? (<Text>EndDate: {proposal.endDate}</Text>)
+                : proposal.executed
+                  ? (<Text className="color-green-500 font-bold">Executed</Text>)
+                  : (<Text className="color-green-800 font-bold">To be executed</Text>)
+            }
+            </View>
+            <View className="flex-row items-center">
+              <Ionicons name="person-outline" size="18" color="black" />
+              <Text>{censusPercentage}%</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      </View>
+    </TouchableWithoutFeedback>
+  )
+}
+
+export default ProposalCard;

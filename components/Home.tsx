@@ -3,7 +3,6 @@ import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import DAOCard from './DAOCard';
 
 const query = gql`
@@ -40,9 +39,6 @@ type DAO = {
   proposals: Proposal[];
 };
 
-type Metadata = {
-  description: string;
-}
 
 export default function HomeView({navigation}: any) {
   const [lastDAOs, setLastDAOs] = useState<DAO[]>();
@@ -52,7 +48,6 @@ export default function HomeView({navigation}: any) {
     try {
       const stored = await AsyncStorage.getItem(`starred`)
       if (stored !== null) result = JSON.parse(stored);
-      console.log('starred: ', result)
     } catch (e) {
       console.log(e);
     } finally {
@@ -67,7 +62,6 @@ export default function HomeView({navigation}: any) {
       query,
       {limit: 30, skip: 0, direction: 'desc', daos: starred}
     ).then((data) => {
-      console.log('DAOs: ', data['daos'])
       setLastDAOs(data['daos'])
     })
 

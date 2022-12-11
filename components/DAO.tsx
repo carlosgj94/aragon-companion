@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import ProposalCard from './ProposalCard';
 
 const erc20Query = gql`
   query proposals($limit:Int!, $dao:String!) {
@@ -14,7 +15,9 @@ const erc20Query = gql`
       creator
       metadata
       executed
-      createdAt
+      endDate
+      voteCount
+      census
       yes
       no
       abstain
@@ -30,7 +33,9 @@ const multisigQuery = gql`
       creator
       metadata
       executed
-      createdAt
+      endDate
+      voteCount
+      census
       yes
       no
       open
@@ -43,6 +48,9 @@ type Proposal = {
   metadata: string;
   executed: boolean;
   createdAt: string;
+  endDate: string;
+  voteCount: string;
+  census: string;
   yes: string;
   no: string;
   abstain: string;
@@ -63,22 +71,6 @@ type ProposalWithMetadata = {
   open: string;
 }
 
-const ProposalCard = ({proposal, navigation}: any) => {
-  const proposalClicked = () => {
-    navigation.push('Proposal', {proposal, navigation});
-  }
-  return (
-    <TouchableWithoutFeedback
-      onPress={proposalClicked}>
-      <View className="block m-2 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
-        <Text className="text-md text-lg font-bold">{proposal.title}</Text>
-        <Text>Yes: {proposal.yes}</Text>
-        <Text>No: {proposal.no}</Text>
-        <Text>Abstain: {proposal.abstain}</Text>
-      </View>
-    </TouchableWithoutFeedback>
-  )
-}
 
 export default function DAOView({navigation, route}: any) {
   const {dao, metadata} = route.params;
@@ -129,7 +121,7 @@ export default function DAOView({navigation, route}: any) {
   useEffect(() => {
     if (!proposals?.length) fetchErc20Proposals();
     if (proposals?.length) fetchProposalsMetadata();
-  }, [proposals])
+  }, [])
 
   return (
     <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
