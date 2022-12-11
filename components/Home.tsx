@@ -72,12 +72,16 @@ export default function HomeView({navigation}: any) {
   }, [lastDAOs]);
 
   useEffect(() => {
-    daoList();
-  }, []);
+    //if (!lastDAOs)
+      daoList();
+    const unsubscrive = navigation.addListener('focus', () => {
+      daoList();
+    });
+  }, [navigation]);
   
   return (
     <View className="bg-white">
-      { lastDAOs?.length && <FlatList
+      { lastDAOs?.length > 0 && <FlatList
         data={lastDAOs}
         renderItem={({item}) => <DAOCard dao={item} navigation={navigation}/>}
         keyExtractor={dao => dao.id}
@@ -99,7 +103,7 @@ const DAOCard = ({dao, navigation}: any) => {
   }, [])
   
   const daoClicked = () => {
-    navigation.push('DAO', {dao, metadata: description})
+    navigation.push('HomeDAO', {dao, metadata: description})
   }
 
   return (

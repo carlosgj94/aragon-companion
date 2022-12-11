@@ -39,7 +39,7 @@ export default function StarButton({daoId}: any) {
       const index = currentStars.indexOf(daoId)
       if (index >= 0) {
         currentStars.splice(index, 1)
-        await AsyncStorage.setItem('starred', currentStars.toString())
+        await AsyncStorage.setItem('starred', JSON.stringify(currentStars))
         setStarred(false)
       } else {
         await AsyncStorage.setItem('starred', JSON.stringify([...currentStars, daoId]))

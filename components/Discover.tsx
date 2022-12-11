@@ -4,9 +4,23 @@ import { useEffect, useCallback, useState } from 'react';
 import SearchBar from "react-native-dynamic-search-bar";
 import axios from 'axios';
 
-const query = gql`
+const searchQuery= gql`
    query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $search: String) {
     daos(first: $limit, skip: $skip, where: {name_contains_nocase: $search}){
+      id
+      name
+      metadata
+      proposals(first: $limit) {
+        id
+      }
+     }
+    }
+`
+
+
+const query = gql`
+   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $orderItem: Dao_orderBy) {
+    daos(first: $limit, skip: $skip, orderDirection: $direction, orderBy: $orderItem){
       id
       name
       metadata
@@ -40,10 +54,9 @@ export default function HomeView({navigation}: any) {
   const searchDAOList = useCallback(() => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      query,
+      searchQuery,
       {limit: 10, skip: 0, direction: 'desc', search: searchInput}
     ).then((data) => {
-      console.log('DAOs: ', data['daos'])
       setLastDAOs(data['daos'])
     })
   }, [searchInput])
@@ -54,7 +67,6 @@ export default function HomeView({navigation}: any) {
       query,
       {limit: 30, skip: 0, direction: 'desc', sortBy: 'createdAt'}
     ).then((data) => {
-//      console.log('DAOs: ', data['daos'])
       setLastDAOs(data['daos'])
     })
 
@@ -84,17 +96,18 @@ export default function HomeView({navigation}: any) {
 
 const DAOCard = ({dao, navigation}: any) => {
   const [description, setDescription] = useState<Metadata>();
+
   useEffect(() => {
     axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+dao.metadata)
       .then(({data}) => {
-        // console.log('Metadata Response: ', data)
+        console.log(data.description)
         setDescription(data.description)
       })
     .catch((error) => console.log('Axios error: ', error))
   }, [])
   
   const daoClicked = () => {
-    navigation.push('DAO', {dao, metadata: description})
+    navigation.push('DiscoverDAO', {dao, metadata: description})
   }
 
   return (
@@ -102,7 +115,7 @@ const DAOCard = ({dao, navigation}: any) => {
       onPress={daoClicked}>
       <View className="block m-2 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
         <Text className="text-md text-xl">{dao.name}</Text>
-        <Text> {description}</Text> 
+        <Text>{description}</Text> 
         {dao.proposals.length > 0 && (<Text className="text-xxl bg-blue-500	color-blue-500">O</Text>)}
       </View>
     </TouchableWithoutFeedback>

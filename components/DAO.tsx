@@ -88,7 +88,6 @@ const fetchMultisigProposals = useCallback(async () => {
       multisigQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
-      console.log('Address Proposals: ', data['addresslistProposals'])
       setProposals(data['addresslistProposals'])
     })
   }, [])
@@ -100,7 +99,6 @@ const fetchMultisigProposals = useCallback(async () => {
       erc20Query,
       {limit: 10, dao: dao.id}
     ).then((data) => {
-      console.log('ERC@) Proposals: ', data['erc20VotingProposals'])
       if (data['erc20VotingProposals'].length) setProposals(data['erc20VotingProposals'])
       else fetchMultisigProposals()
     })
@@ -118,7 +116,6 @@ const fetchMultisigProposals = useCallback(async () => {
         ...response['data']
       };
     }))
-    console.log(proposalsMetadata)
     setProposalsWithMetadata(proposalsMetadata)
   }, [proposals]);
   
