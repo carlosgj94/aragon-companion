@@ -1,21 +1,17 @@
 import { Button, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
 import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
+import SearchBar from "react-native-dynamic-search-bar";
 import axios from 'axios';
 
 const query = gql`
-   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $sortBy: Dao_orderBy!) {
-    daos(first: $limit, skip: $skip){
+   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $search: String) {
+    daos(first: $limit, skip: $skip, where: {name_contains_nocase: $search}){
       id
       name
       metadata
-      token
       proposals(first: $limit) {
         id
-        creator
-        metadata
-        executed
-        createdAt
       }
      }
     }
@@ -23,10 +19,6 @@ const query = gql`
 
 type Proposal = {
   id: string;
-  creator: string;
-  metadata: string;
-  executed: boolean;
-  createdAt: string;
 }
 
 type DAO = {
@@ -43,6 +35,18 @@ type Metadata = {
 
 export default function HomeView({navigation}: any) {
   const [lastDAOs, setLastDAOs] = useState<DAO[]>();
+  const [searchInput, setSearchInput] = useState<string>();
+  
+  const searchDAOList = useCallback(() => {
+    request(
+      'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
+      query,
+      {limit: 10, skip: 0, direction: 'desc', search: searchInput}
+    ).then((data) => {
+      console.log('DAOs: ', data['daos'])
+      setLastDAOs(data['daos'])
+    })
+  }, [searchInput])
 
   const daoList = useCallback(() => {
     request(
@@ -57,11 +61,17 @@ export default function HomeView({navigation}: any) {
   }, [lastDAOs]);
 
   useEffect(() => {
-    daoList();
-  }, []);
+    if (!searchInput) daoList();
+    else searchDAOList()
+  }, [searchInput]);
   
   return (
     <View className="bg-white">
+      <SearchBar
+        className="m-3"
+        placeholder="Search here"
+        onChangeText={(text) => setSearchInput(text)}
+      />
       { lastDAOs?.length && <FlatList
         data={lastDAOs}
         renderItem={({item}) => <DAOCard dao={item} navigation={navigation}/>}
