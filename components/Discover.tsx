@@ -1,4 +1,5 @@
 import { Button, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
 import SearchBar from "react-native-dynamic-search-bar";
@@ -78,7 +79,7 @@ export default function HomeView({navigation}: any) {
   }, [searchInput]);
   
   return (
-    <View className="bg-white">
+    <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
       <SearchBar
         className="m-3"
         placeholder="Search here"
@@ -90,7 +91,7 @@ export default function HomeView({navigation}: any) {
         keyExtractor={dao => dao.id}
       />
       }
-    </View>
+    </SafeAreaView>
   )
 }
 

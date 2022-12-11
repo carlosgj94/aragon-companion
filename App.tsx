@@ -33,10 +33,10 @@ import { LogBox } from 'react-native';
 // God pls forbid
 LogBox.ignoreLogs([ 'Non-serializable values were found in the navigation state', ]);
 
-function SettingsScreen() {
+function ProfileScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
+      <Text>Profile!</Text>
     </View>
   );
 }
@@ -119,8 +119,9 @@ const Navigation = () => {
           name="Home"
           component={HomeView} 
            options={{
-            headerRight: HeaderRight
-          }}        />
+             headerShown: false
+           }}       
+        />
         <HomeStack.Screen 
           name="HomeDAO" 
           component={DAOView}
@@ -147,8 +148,9 @@ const Navigation = () => {
           name="Discover"
           component={DiscoverView} 
            options={{
-            headerRight: HeaderRight
-          }}        />
+            headerShown: false
+          }}
+        />
         <DiscoverStack.Screen 
           name="DiscoverDAO" 
           component={DAOView}
@@ -179,8 +181,8 @@ const Navigation = () => {
               iconName = focused
                 ? 'ios-home'
                 : 'ios-home-outline';
-            } else if (route.name === 'Settings') {
-              iconName = focused ? 'settings' : 'settings-outline';
+            } else if (route.name === 'Profile') {
+              iconName = focused ? 'person' : 'person-outline';
             } else if (route.name === 'Discover') {
               iconName = focused ? 'search' : 'search-outline';
             }
@@ -206,7 +208,13 @@ const Navigation = () => {
             headerShown: false
           }}
          />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{
+            headerRight: HeaderRight
+          }}
+       />
       </Tab.Navigator>
     </NavigationContainer>
   )

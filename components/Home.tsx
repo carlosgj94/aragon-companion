@@ -1,6 +1,7 @@
 import { Button, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
 import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
@@ -80,14 +81,14 @@ export default function HomeView({navigation}: any) {
   }, [navigation]);
   
   return (
-    <View className="bg-white">
+    <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
       { lastDAOs?.length > 0 && <FlatList
         data={lastDAOs}
         renderItem={({item}) => <DAOCard dao={item} navigation={navigation}/>}
         keyExtractor={dao => dao.id}
       />
       }
-    </View>
+    </SafeAreaView>
   )
 }
 
