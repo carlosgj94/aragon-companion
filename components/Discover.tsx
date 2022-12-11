@@ -1,12 +1,11 @@
 import { Button, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
 import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const query = gql`
-   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $daos: [String]!) {
-    daos(first: $limit, skip: $skip, orderDirection: $direction, where: {id_in: $daos}){
+   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $sortBy: Dao_orderBy!) {
+    daos(first: $limit, skip: $skip){
       id
       name
       metadata
@@ -45,27 +44,13 @@ type Metadata = {
 export default function HomeView({navigation}: any) {
   const [lastDAOs, setLastDAOs] = useState<DAO[]>();
 
-  const getStorageStars = useCallback(async () => {
-    var result = []
-    try {
-      const stored = await AsyncStorage.getItem(`starred`)
-      if (stored !== null) result = JSON.parse(stored);
-      console.log('starred: ', result)
-    } catch (e) {
-      console.log(e);
-    } finally {
-      return result;
-    }
-  }, [])
-
-  const daoList = useCallback(async () => {
-    const starred = await getStorageStars()
+  const daoList = useCallback(() => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
       query,
-      {limit: 30, skip: 0, direction: 'desc', daos: starred}
+      {limit: 30, skip: 0, direction: 'desc', sortBy: 'createdAt'}
     ).then((data) => {
-      console.log('DAOs: ', data['daos'])
+//      console.log('DAOs: ', data['daos'])
       setLastDAOs(data['daos'])
     })
 

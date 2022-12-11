@@ -22,6 +22,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import HomeView from './components/Home';
+import DiscoverView from './components/Discover';
 import DAOView from './components/DAO';
 import ProposalView from './components/Proposal';
 
@@ -42,6 +43,7 @@ function SettingsScreen() {
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
+const DiscoverStack = createNativeStackNavigator();
 
  
 const asyncStoragePersistor = createAsyncStoragePersister({
@@ -138,6 +140,34 @@ const Navigation = () => {
     )
   }
 
+  const DiscoverStackComponent = () => {
+    return (
+      <DiscoverStack.Navigator>
+        <DiscoverStack.Screen 
+          name="Discover"
+          component={DiscoverView} 
+           options={{
+            headerRight: HeaderRight
+          }}        />
+        <DiscoverStack.Screen 
+          name="DAO" 
+          component={DAOView}
+          options={{
+            title:" "
+          }}
+       />
+      <DiscoverStack.Screen
+        name="Proposal"
+        component={ProposalView}
+        options={{
+          presentation: 'modal',
+          headerShown: false
+        }} 
+      />
+      </DiscoverStack.Navigator>
+    )
+  }
+
   return (
     <NavigationContainer>
       <Tab.Navigator 
@@ -150,7 +180,9 @@ const Navigation = () => {
                 ? 'ios-home'
                 : 'ios-home-outline';
             } else if (route.name === 'Settings') {
-              iconName = focused ? 'ios-settings' : 'ios-settings-outline';
+              iconName = focused ? 'settings' : 'settings-outline';
+            } else if (route.name === 'Discover') {
+              iconName = focused ? 'search' : 'search-outline';
             }
 
             // You can return any component that you like here!
@@ -163,6 +195,13 @@ const Navigation = () => {
         <Tab.Screen 
           name="Home" 
           component={HomeStackComponent}
+          options={{
+            headerShown: false
+          }}
+         />
+        <Tab.Screen 
+          name="Discover" 
+          component={DiscoverStackComponent}
           options={{
             headerShown: false
           }}
