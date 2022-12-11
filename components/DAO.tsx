@@ -1,6 +1,7 @@
 import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
 import { request, gql } from 'graphql-request';
 import { useState, useEffect, useCallback } from 'react';
+import StarButton from './StarButton';
 import axios from 'axios';
 
 const erc20Query = gql`
@@ -128,7 +129,10 @@ const fetchMultisigProposals = useCallback(async () => {
 
   return (
     <View className="bg-white flex-1">
-      <Text className="text-md text-xl font-bold">{dao.name}</Text>
+      <View className="flex flex-row justify-between m-3">
+        <Text className="text-md text-xxl font-bold">{dao.name}</Text>
+        <StarButton daoId={dao.id}/>
+      </View>
       <Text> {metadata}</Text> 
       { proposalsWithMetadata?.length && <FlatList
         data={proposalsWithMetadata}
