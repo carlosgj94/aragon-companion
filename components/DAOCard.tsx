@@ -38,7 +38,7 @@ export default function DAOCard({dao, navigation}: any) {
         <View className="flex-row justify-between pt-2">
           <Text className="font-light flex-1"> {description}</Text> 
           <View className="flex-row items-center">
-            <Ionicons name="megaphone-outline" size="18" color="black" />
+            <Ionicons name="megaphone-outline" size={18} color="black" />
             <Text className="font-lg font-light p-1">{dao.proposals.length}</Text>
           </View>
         </View>

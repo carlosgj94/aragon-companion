@@ -12,12 +12,14 @@ const ProposalCard = ({proposal, navigation}: any) => {
   // Executed or not
   // quorum
   
+  console.log(proposal.census, proposal.voteCount, proposal.yes, proposal.no, proposal.abstain)
   const census = BigNumber.from(proposal.census)
-  const voteCount = BigNumber.from(proposal.voteCount);
+  const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
   const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).div(voteCount).mul(100).toNumber();
-  const abstainVotes = !voteCount.eq(0) && BigNumber.from(proposal.abstain).div(voteCount).mul(100).toNumber();
+  const abstainVotes = proposal.abstain && !voteCount.eq(0) && BigNumber.from(proposal.abstain).div(voteCount).mul(100).toNumber();
   const noVotes = !voteCount.eq(0) && BigNumber.from(proposal.no).div(voteCount).mul(100).toNumber();
-  const censusPercentage = !census.eq(0) && !voteCount.eq(0) ? voteCount.div(census).mul(100).toNumber() : 0;
+  const censusPercentage = !census.eq(0) &&
+     (!voteCount.eq(0) ? voteCount.mul(100).div(census).toNumber() : 0);
   
   const VoteDistributionBar = () => (
     <View className="flex-1 flex-row border rounded-md border-gray-300 shadow-md mt-2 mb-2">
@@ -29,10 +31,10 @@ const ProposalCard = ({proposal, navigation}: any) => {
         className="bg-red-400 pt-3 pb-3"
           style={{width: noVotes+'%'}}
       />
-      <View 
+      {proposal.abstain && <View 
         className="bg-gray-400 pt-3 pb-3 rounded-r-md"
         style={{width: abstainVotes+'%'}}
-      />
+      />}
     </View>
   )
 

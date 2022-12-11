@@ -110,6 +110,7 @@ export default function DAOView({navigation, route}: any) {
         ? proposal.metadata.slice(7)
         : proposal.metadata
       const response = await axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
+      console.log(response['data'])
       return {
         ...proposal,
         ...response['data']
@@ -121,7 +122,7 @@ export default function DAOView({navigation, route}: any) {
   useEffect(() => {
     if (!proposals?.length) fetchErc20Proposals();
     if (proposals?.length) fetchProposalsMetadata();
-  }, [])
+  }, [proposals])
 
   return (
     <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
