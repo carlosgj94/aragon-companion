@@ -2,6 +2,9 @@ import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
 import { request, gql } from 'graphql-request';
 import { useState, useEffect, useCallback } from 'react';
 import StarButton from './StarButton';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 
 const erc20Query = gql`
@@ -82,7 +85,11 @@ export default function DAOView({navigation, route}: any) {
   const [proposals, setProposals] = useState<Proposal[]>();
   const [proposalsWithMetadata, setProposalsWithMetadata] = useState<ProposalWithMetadata[]>();
 
-const fetchMultisigProposals = useCallback(async () => {
+  const backPressed = () => {
+    navigation.pop();
+  }
+  
+  const fetchMultisigProposals = useCallback(async () => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
       multisigQuery,
@@ -125,17 +132,32 @@ const fetchMultisigProposals = useCallback(async () => {
   }, [proposals])
 
   return (
-    <View className="bg-white flex-1">
-      <View className="flex flex-row justify-between m-3">
-        <Text className="text-md text-xxl font-bold">{dao.name}</Text>
-        <StarButton daoId={dao.id}/>
-      </View>
-      <Text> {metadata}</Text> 
+    <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
+      <View className="block border-b border-gray-200 shadow-md">
+        <View className="flex-row items-center justify-between">
+          <TouchableWithoutFeedback
+            onPress={backPressed}>
+            <Ionicons className="ml-2" name="arrow-back" size="30" color="black" />
+          </TouchableWithoutFeedback>
+          <LinearGradient 
+              colors={['rgb(59,130,246)', 'rgb(255,255,255)']}
+              className="m-2 p-2 rounded-full rotate-45">
+            <Text className="w-7 h-7 text-center font-bold text-xl">{dao.name.substring(0, 1)}</Text>
+          </LinearGradient>
+          <StarButton className="m-3" daoId={dao.id}/>
+        </View>
+        <View className="m-2">
+            <Text className="text-2xl font-bold">{dao.name}</Text>
+            <Text className="text-md font-light pt-1"> {metadata}</Text> 
+        </View>
+    </View>
+    <View className="bg-gray-100 flex-1">
       { proposalsWithMetadata?.length && <FlatList
         data={proposalsWithMetadata}
         renderItem={({item}) => <ProposalCard proposal={item} navigation={navigation}/>}
         keyExtractor={(proposal) => proposal.id}
       />}
-    </View>
+  </View>
+    </SafeAreaView>
   )
 }

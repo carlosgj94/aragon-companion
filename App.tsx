@@ -123,10 +123,10 @@ const Navigation = () => {
            }}       
         />
         <HomeStack.Screen 
-          name="HomeDAO" 
+          name="DAO" 
           component={DAOView}
           options={{
-            title:" "
+            headerShown: false
           }}
        />
       <HomeStack.Screen
@@ -152,10 +152,10 @@ const Navigation = () => {
           }}
         />
         <DiscoverStack.Screen 
-          name="DiscoverDAO" 
+          name="DAO" 
           component={DAOView}
           options={{
-            title:" "
+            headerShown: false
           }}
        />
       <DiscoverStack.Screen

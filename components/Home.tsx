@@ -4,6 +4,7 @@ import { useEffect, useCallback, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import DAOCard from './DAOCard';
 
 const query = gql`
    query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $daos: [String]!) {
@@ -92,29 +93,3 @@ export default function HomeView({navigation}: any) {
   )
 }
 
-const DAOCard = ({dao, navigation}: any) => {
-  const [description, setDescription] = useState<Metadata>();
-  useEffect(() => {
-    axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+dao.metadata)
-      .then(({data}) => {
-        // console.log('Metadata Response: ', data)
-        setDescription(data.description)
-      })
-    .catch((error) => console.log('Axios error: ', error))
-  }, [])
-  
-  const daoClicked = () => {
-    navigation.push('HomeDAO', {dao, metadata: description})
-  }
-
-  return (
-    <TouchableWithoutFeedback
-      onPress={daoClicked}>
-      <View className="block m-2 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
-        <Text className="text-md text-xl">{dao.name}</Text>
-        <Text> {description}</Text> 
-        {dao.proposals.length > 0 && (<Text className="text-xxl bg-blue-500	color-blue-500">O</Text>)}
-      </View>
-    </TouchableWithoutFeedback>
-    )
- }

@@ -61,7 +61,7 @@ export default function StarButton({daoId}: any) {
   return (
     <TouchableWithoutFeedback
       onPress={starPressed}>
-      <Ionicons name={starred ? 'star' : 'star-outline'} size={30} color={"black"} />
+      <Ionicons className="mr-2" name={starred ? 'star' : 'star-outline'} size={30} color={"black"} />
     </TouchableWithoutFeedback>
   )
 }
