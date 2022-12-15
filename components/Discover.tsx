@@ -1,4 +1,4 @@
-import { Button, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { Button, View, Text, FlatList, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
@@ -49,16 +49,19 @@ type Metadata = {
 }
 
 export default function HomeView({navigation}: any) {
+  const [loading, setLoading] = useState<boolean>(true);
   const [lastDAOs, setLastDAOs] = useState<DAO[]>();
   const [searchInput, setSearchInput] = useState<string>();
   
   const searchDAOList = useCallback(() => {
+    setLoading(true);
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
       searchQuery,
       {limit: 10, skip: 0, direction: 'desc', search: searchInput}
     ).then((data) => {
       setLastDAOs(data['daos'])
+      setLoading(false);
     })
   }, [searchInput])
 
@@ -68,7 +71,8 @@ export default function HomeView({navigation}: any) {
       query,
       {limit: 30, skip: 0, direction: 'desc', sortBy: 'createdAt'}
     ).then((data) => {
-      setLastDAOs(data['daos'])
+      setLastDAOs(data['daos']);
+      setLoading(false);
     })
 
   }, [lastDAOs]);
@@ -85,6 +89,7 @@ export default function HomeView({navigation}: any) {
         placeholder="Search here"
         onChangeText={(text) => setSearchInput(text)}
       />
+      { loading && <ActivityIndicator size="large"/> }
       { lastDAOs?.length && <FlatList
         data={lastDAOs}
         renderItem={({item}) => <DAOCard dao={item} navigation={navigation}/>}

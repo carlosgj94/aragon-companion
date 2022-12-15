@@ -1,4 +1,4 @@
-import { Button, View, Text, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { Button, View, Text, FlatList, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -41,6 +41,7 @@ type DAO = {
 
 
 export default function HomeView({navigation}: any) {
+  const [loading, setLoading] = useState<boolean>(true);
   const [lastDAOs, setLastDAOs] = useState<DAO[]>();
 
   const getStorageStars = useCallback(async () => {
@@ -63,6 +64,7 @@ export default function HomeView({navigation}: any) {
       {limit: 30, skip: 0, direction: 'desc', daos: starred}
     ).then((data) => {
       setLastDAOs(data['daos'])
+      setLoading(false);
     })
 
   }, [lastDAOs]);
@@ -77,6 +79,7 @@ export default function HomeView({navigation}: any) {
   
   return (
     <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
+      { loading && <ActivityIndicator size="large"/> }
       { lastDAOs?.length > 0 && <FlatList
         data={lastDAOs}
         renderItem={({item}) => <DAOCard dao={item} navigation={navigation}/>}
