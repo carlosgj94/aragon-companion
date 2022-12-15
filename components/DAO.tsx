@@ -1,4 +1,4 @@
-import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
+import {View, Text, FlatList, TouchableWithoutFeedback, ActivityIndicator} from 'react-native';
 import { request, gql } from 'graphql-request';
 import { useState, useEffect, useCallback } from 'react';
 import StarButton from './StarButton';
@@ -74,6 +74,7 @@ type ProposalWithMetadata = {
 
 export default function DAOView({navigation, route}: any) {
   const {dao, metadata} = route.params;
+  const [loading, setLoading] = useState<boolean>(true);
   const [proposals, setProposals] = useState<Proposal[]>();
   const [proposalsWithMetadata, setProposalsWithMetadata] = useState<ProposalWithMetadata[]>();
 
@@ -117,6 +118,7 @@ export default function DAOView({navigation, route}: any) {
       };
     }))
     setProposalsWithMetadata(proposalsMetadata)
+    setLoading(false)
   }, [proposals]);
   
   useEffect(() => {
@@ -145,6 +147,7 @@ export default function DAOView({navigation, route}: any) {
         </View>
     </View>
     <View className="bg-gray-100 flex-1">
+      { loading && <ActivityIndicator size="large"/> }
       { proposalsWithMetadata?.length && <FlatList
         data={proposalsWithMetadata}
         renderItem={({item}) => <ProposalCard proposal={item} navigation={navigation}/>}
