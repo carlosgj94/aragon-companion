@@ -13,8 +13,14 @@ export default function DAOCard({dao, navigation}: any) {
   const [description, setDescription] = useState<Metadata>();
 
   useEffect(() => {
-    axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+dao.metadata)
+    console.log('ipfs uri: ', dao.metadata)
+    const metadataURI = dao.metadata
+      .includes('ipfs://')
+      ? dao.metadata.slice(7)
+      : dao.metadata
+    axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
       .then(({data}) => {
+        console.log('Description: ', data.description)
         if (loading) setDescription(data.description)
         setLoading(false)
       })

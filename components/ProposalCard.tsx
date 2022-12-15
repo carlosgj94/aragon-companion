@@ -6,13 +6,6 @@ const ProposalCard = ({proposal, navigation}: any) => {
   const proposalClicked = () => {
     navigation.push('Proposal', {proposal, navigation});
   }
-  // Current Winner
-  // Vote Distribution
-  // Time Left
-  // Executed or not
-  // quorum
-  
-  console.log(proposal.census, proposal.voteCount, proposal.yes, proposal.no, proposal.abstain)
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
   const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).div(voteCount).mul(100).toNumber();
