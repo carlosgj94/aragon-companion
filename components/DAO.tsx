@@ -88,7 +88,7 @@ export default function DAOView({navigation, route}: any) {
       multisigQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
-      setProposals(data['addresslistProposals'])
+      if (loading) setProposals(data['addresslistProposals'])
     })
   }, [])
   
@@ -99,7 +99,7 @@ export default function DAOView({navigation, route}: any) {
       erc20Query,
       {limit: 10, dao: dao.id}
     ).then((data) => {
-      if (data['erc20VotingProposals'].length) setProposals(data['erc20VotingProposals'])
+      if (data['erc20VotingProposals'].length && loading) setProposals(data['erc20VotingProposals'])
       else fetchMultisigProposals()
     })
   }, [])
@@ -111,19 +111,20 @@ export default function DAOView({navigation, route}: any) {
         ? proposal.metadata.slice(7)
         : proposal.metadata
       const response = await axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
-      console.log(response['data'])
       return {
         ...proposal,
         ...response['data']
       };
     }))
-    setProposalsWithMetadata(proposalsMetadata)
+    if(loading) setProposalsWithMetadata(proposalsMetadata)
     setLoading(false)
   }, [proposals]);
   
   useEffect(() => {
     if (!proposals?.length) fetchErc20Proposals();
     if (proposals?.length) fetchProposalsMetadata();
+    
+    return () => { setLoading(false) }
   }, [proposals])
 
   return (
@@ -132,7 +133,7 @@ export default function DAOView({navigation, route}: any) {
         <View className="flex-row items-center justify-between">
           <TouchableWithoutFeedback
             onPress={backPressed}>
-            <Ionicons className="ml-2" name="arrow-back" size="30" color="black" />
+            <Ionicons className="ml-2" name="arrow-back" size={30} color="black" />
           </TouchableWithoutFeedback>
           <LinearGradient 
               colors={['rgb(59,130,246)', 'rgb(255,255,255)']}

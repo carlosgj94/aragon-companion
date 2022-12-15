@@ -63,7 +63,7 @@ export default function HomeView({navigation}: any) {
       query,
       {limit: 30, skip: 0, direction: 'desc', daos: starred}
     ).then((data) => {
-      setLastDAOs(data['daos'])
+      if (loading) setLastDAOs(data['daos'])
       setLoading(false);
     })
 
@@ -71,10 +71,12 @@ export default function HomeView({navigation}: any) {
 
   useEffect(() => {
     //if (!lastDAOs)
-      daoList();
+    if (loading) daoList();
     const unsubscrive = navigation.addListener('focus', () => {
+      setLoading(true);
       daoList();
     });
+    return () => { setLoading(false) }
   }, [navigation]);
   
   return (

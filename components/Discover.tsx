@@ -44,10 +44,6 @@ type DAO = {
   proposals: Proposal[];
 };
 
-type Metadata = {
-  description: string;
-}
-
 export default function HomeView({navigation}: any) {
   const [loading, setLoading] = useState<boolean>(true);
   const [lastDAOs, setLastDAOs] = useState<DAO[]>();
@@ -60,7 +56,7 @@ export default function HomeView({navigation}: any) {
       searchQuery,
       {limit: 10, skip: 0, direction: 'desc', search: searchInput}
     ).then((data) => {
-      setLastDAOs(data['daos'])
+      if (loading) setLastDAOs(data['daos'])
       setLoading(false);
     })
   }, [searchInput])
@@ -71,7 +67,7 @@ export default function HomeView({navigation}: any) {
       query,
       {limit: 30, skip: 0, direction: 'desc', sortBy: 'createdAt'}
     ).then((data) => {
-      setLastDAOs(data['daos']);
+      if (loading) setLastDAOs(data['daos']);
       setLoading(false);
     })
 
@@ -80,6 +76,8 @@ export default function HomeView({navigation}: any) {
   useEffect(() => {
     if (!searchInput) daoList();
     else searchDAOList()
+
+    return () => { setLoading(false) }
   }, [searchInput]);
   
   return (

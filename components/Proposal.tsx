@@ -9,7 +9,7 @@ const VoteBar = ({title, votes, color}) => {
       <View className="flex-row justify-between m-1 items-center">
         <Text className="color-blue-500 text-md font-bold">{title}</Text>
         <View className="flex-row items-center">
-         <Ionicons name="person-outline" size="18" color="black" />
+         <Ionicons name="person-outline" size={18} color="black" />
           <Text>{votes}%</Text>
         </View>
       </View>

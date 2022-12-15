@@ -177,13 +177,13 @@ const Navigation = () => {
           tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            if (route.name === 'Home') {
+            if (route.name === 'HomeView') {
               iconName = focused
                 ? 'ios-home'
                 : 'ios-home-outline';
-            } else if (route.name === 'Profile') {
+            } else if (route.name === 'ProfileView') {
               iconName = focused ? 'person' : 'person-outline';
-            } else if (route.name === 'Discover') {
+            } else if (route.name === 'DiscoverView') {
               iconName = focused ? 'search' : 'search-outline';
             }
 
@@ -195,23 +195,26 @@ const Navigation = () => {
         })}
     >
         <Tab.Screen 
-          name="Home" 
+          name="HomeView" 
           component={HomeStackComponent}
           options={{
+            title: 'Home',
             headerShown: false
           }}
          />
         <Tab.Screen 
-          name="Discover" 
+          name="DiscoverView" 
           component={DiscoverStackComponent}
           options={{
+            title: 'Discover',
             headerShown: false
           }}
          />
         <Tab.Screen 
-          name="Profile" 
+          name="ProfileView" 
           component={ProfileScreen}
           options={{
+            title: 'Profile',
             headerRight: HeaderRight
           }}
        />

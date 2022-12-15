@@ -9,14 +9,17 @@ type Metadata = {
 }
 
 export default function DAOCard({dao, navigation}: any) {
+  const [loading, setLoading] = useState<boolean>(true);
   const [description, setDescription] = useState<Metadata>();
+
   useEffect(() => {
     axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+dao.metadata)
       .then(({data}) => {
-        // console.log('Metadata Response: ', data)
-        setDescription(data.description)
+        if (loading) setDescription(data.description)
+        setLoading(false)
       })
     .catch((error) => console.log('Axios error: ', error))
+    return () => { setLoading(false) }
   }, [])
   
   const daoClicked = () => {

@@ -43,7 +43,7 @@ const ProposalCard = ({proposal, navigation}: any) => {
       onPress={proposalClicked}>
       <View className="block m-2 p-4 bg-white border border-gray-200 rounded-lg shadow-md">
         <View className="flex-row items-center">
-          <Ionicons name="megaphone-outline" size="20" color="black" />
+          <Ionicons name="megaphone-outline" size={20} color="black" />
           <Text className="text-md text-xl font-bold pl-1">{proposal.title}</Text>
         </View>
 
@@ -60,7 +60,7 @@ const ProposalCard = ({proposal, navigation}: any) => {
             }
             </View>
             <View className="flex-row items-center">
-              <Ionicons name="person-outline" size="18" color="black" />
+              <Ionicons name="person-outline" size={18} color="black" />
               <Text>{censusPercentage}%</Text>
             </View>
           </View>
