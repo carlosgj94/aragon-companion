@@ -15,6 +15,7 @@ const erc20Query = gql`
       creator
       metadata
       executed
+      startDate
       endDate
       voteCount
       census
@@ -33,6 +34,7 @@ const multisigQuery = gql`
       creator
       metadata
       executed
+      startDate
       endDate
       voteCount
       census
@@ -48,6 +50,7 @@ type Proposal = {
   metadata: string;
   executed: boolean;
   createdAt: string;
+  startDate: string;
   endDate: string;
   voteCount: string;
   census: string;
@@ -65,6 +68,9 @@ type ProposalWithMetadata = {
   title: string;
   executed: boolean;
   createdAt: string;
+  startDate: string;
+  endDate: string;
+  voteCount: string;
   yes: string;
   no: string;
   abstain: string;

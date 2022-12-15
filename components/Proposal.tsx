@@ -1,6 +1,11 @@
 import {View, Text} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BigNumber} from 'ethers';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import {useState, useEffect, useCallback} from 'react';
+
+dayjs.extend(relativeTime)
 
 
 const VoteBar = ({title, votes, color}) => {
@@ -34,7 +39,12 @@ export default function ProposalView({navigation, route}: any) {
   const censusPercentage = !census.eq(0) &&
      (!voteCount.eq(0) ? voteCount.mul(100).div(census).toNumber() : 0);
   
-  
+  const isOpen = dayjs().isBefore(dayjs(proposal.startDate * 1000))
+    ? false
+    : dayjs().isBefore(dayjs(proposal.endDate * 1000))
+      ? true
+      : false
+
   return (
       <View className="flex-1 bg-gray-100">
       <View className="p-2">
@@ -44,6 +54,15 @@ export default function ProposalView({navigation, route}: any) {
           <Text className="color-blue-500">{proposal.creator.substring(0, 5)}...{proposal.creator.substring(38)}</Text>
         </View>
         <Text className="font-light text-md pt-1 mb-2">{proposal.summary}</Text>
+        <View className="flex-row justify-between items-center">
+          <Text>Votes: {proposal.voteCount}</Text>
+          {dayjs().isBefore(dayjs(proposal.startDate * 1000))
+            ?   (<Text>Starts in: {dayjs(proposal.startDate * 1000).fromNow()}</Text>)
+            : dayjs().isBefore(dayjs(proposal.endDate * 1000)) 
+              ? (<Text className="color-green-500 font-bold text-lg">Open</Text>)
+              : (<Text>FInished {dayjs(proposal.endDate * 1000).fromNow()}</Text>)
+          }
+        </View>
     
         <View className="p-2 mt-2 bg-white border rounded-xl border-gray-200">
           <Text className="font-bold text-xl">Voters</Text>
@@ -56,11 +75,11 @@ export default function ProposalView({navigation, route}: any) {
       </View>
       <View className="flex-1"/>
       <View className="justify-end h-24 flex-row">
-        <View className="bg-green-500 flex-1 border-r border-t-2 border-gray-100">
+        <View className={`${isOpen ? 'bg-green-500' : 'bg-green-200'} flex-1 border-r border-t-2 border-gray-100`}>
           <Text className="text-4xl italic font-bold color-white text-center pt-4">Yes</Text>
         </View>
 
-        <View className="bg-red-500 flex-1 border-l border-t-2 border-gray-100">
+        <View className={`${isOpen ? 'bg-red-500' : 'bg-red-200'} flex-1 border-l border-t-2 border-gray-100`}>
           <Text className="text-4xl italic font-bold color-white text-center pt-4">No</Text>
         </View>
       </View>

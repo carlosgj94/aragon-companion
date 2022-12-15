@@ -6,8 +6,10 @@ import { useEffect } from 'react'
 import { StyleSheet, Button, Text, View } from 'react-native'
 import WalletConnectProvider from '@walletconnect/react-native-dapp'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { WagmiConfig, createClient, createStorage } from 'wagmi'
+import { WagmiConfig, createClient, configureChains, createStorage } from 'wagmi'
 import { noopStorage } from '@wagmi/core'
+import { goerli } from 'wagmi/chains';
+import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { useAccount, useBalance, useConnect, useDisconnect, useSigner, useEnsName, chain } from 'wagmi'
 import { createAsyncStoragePersister } from 'react-query/createAsyncStoragePersister'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
@@ -50,14 +52,20 @@ const asyncStoragePersistor = createAsyncStoragePersister({
   storage: AsyncStorage,
 })
 
-const client = createClient({
-  persister: asyncStoragePersistor,
-  storage: createStorage({
-    storage: noopStorage,
-  }),
-})
 
 export default function App() {
+  const { chains, provider } = configureChains(
+    [goerli],
+    [alchemyProvider({ apiKey: ALCHEMY_KEY })],
+  )
+
+  const client = createClient({
+    persister: asyncStoragePersistor,
+    storage: createStorage({
+      storage: noopStorage,
+    }),
+    provider
+  })
 
   return (
     <WagmiConfig client={client}>
@@ -95,7 +103,9 @@ const Navigation = () => {
   // const { data: signer, isError, isLoading } = useSigner()
 
   useEffect(() => {
+    console.log(connector)
     if (connector?.accounts?.length && !account) {
+      console.log('connecting')
       connect()
     } else {
       disconnect()
