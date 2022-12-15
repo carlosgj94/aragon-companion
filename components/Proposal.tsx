@@ -7,6 +7,12 @@ import {useState, useEffect, useCallback} from 'react';
 
 dayjs.extend(relativeTime)
 
+enum ProposalStatus {
+  ToBeStarted,
+  Open,
+  Finished
+}
+
 
 const VoteBar = ({title, votes, color}) => {
   return (
@@ -33,17 +39,20 @@ export default function ProposalView({navigation, route}: any) {
 
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
-  const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).div(voteCount).mul(100).toNumber();
+  const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).mul(100).div(voteCount).toNumber();
   const abstainVotes = proposal.abstain && !voteCount.eq(0) && BigNumber.from(proposal.abstain).div(voteCount).mul(100).toNumber();
-  const noVotes = !voteCount.eq(0) && BigNumber.from(proposal.no).div(voteCount).mul(100).toNumber();
+  const noVotes = !voteCount.eq(0) && BigNumber.from(proposal.no).mul(100).div(voteCount).toNumber();
   const censusPercentage = !census.eq(0) &&
      (!voteCount.eq(0) ? voteCount.mul(100).div(census).toNumber() : 0);
+  console.log('Vout count: ', proposal.voteCount, !voteCount.eq(0))
+  console.log('Yes:', BigNumber.from(proposal.yes).mul(100).div(voteCount).toNumber())
+  console.log('No:', noVotes, proposal.no)
   
-  const isOpen = dayjs().isBefore(dayjs(proposal.startDate * 1000))
-    ? false
+  const proposalStatus: ProposalStatus = dayjs().isBefore(dayjs(proposal.startDate * 1000))
+    ? ProposalStatus.ToBeStarted
     : dayjs().isBefore(dayjs(proposal.endDate * 1000))
-      ? true
-      : false
+      ? ProposalStatus.Open
+      : ProposalStatus.Finished
 
   return (
       <View className="flex-1 bg-gray-100">
@@ -55,12 +64,12 @@ export default function ProposalView({navigation, route}: any) {
         </View>
         <Text className="font-light text-md pt-1 mb-2">{proposal.summary}</Text>
         <View className="flex-row justify-between items-center">
-          <Text>Votes: {proposal.voteCount}</Text>
-          {dayjs().isBefore(dayjs(proposal.startDate * 1000))
+          <Text>Participation: {censusPercentage}%</Text>
+          { proposalStatus === ProposalStatus.ToBeStarted
             ?   (<Text>Starts in: {dayjs(proposal.startDate * 1000).fromNow()}</Text>)
-            : dayjs().isBefore(dayjs(proposal.endDate * 1000)) 
+            : proposalStatus === ProposalStatus.Open 
               ? (<Text className="color-green-500 font-bold text-lg">Open</Text>)
-              : (<Text>FInished {dayjs(proposal.endDate * 1000).fromNow()}</Text>)
+              : (<Text>Finished</Text>)
           }
         </View>
     
@@ -75,11 +84,11 @@ export default function ProposalView({navigation, route}: any) {
       </View>
       <View className="flex-1"/>
       <View className="justify-end h-24 flex-row">
-        <View className={`${isOpen ? 'bg-green-500' : 'bg-green-200'} flex-1 border-r border-t-2 border-gray-100`}>
+        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-green-500' : 'bg-green-200'} flex-1 border-r border-t-2 border-gray-100`}>
           <Text className="text-4xl italic font-bold color-white text-center pt-4">Yes</Text>
         </View>
 
-        <View className={`${isOpen ? 'bg-red-500' : 'bg-red-200'} flex-1 border-l border-t-2 border-gray-100`}>
+        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-red-500' : 'bg-red-200'} flex-1 border-l border-t-2 border-gray-100`}>
           <Text className="text-4xl italic font-bold color-white text-center pt-4">No</Text>
         </View>
       </View>
