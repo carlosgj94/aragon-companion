@@ -2,8 +2,8 @@ import 'dotenv/config';
 export default {
   expo: {
     scheme: "wmw",
-    name: "wagmi-react-native-starter",
-    slug: "wagmi-react-native-starter",
+    name: "eaglet",
+    slug: "eaglet",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/icon.png",
