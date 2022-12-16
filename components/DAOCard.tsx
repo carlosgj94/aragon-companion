@@ -13,18 +13,19 @@ export default function DAOCard({dao, navigation}: any) {
   const [description, setDescription] = useState<Metadata>();
 
   useEffect(() => {
-    console.log('ipfs uri: ', dao.metadata)
-    const metadataURI = dao.metadata
-      .includes('ipfs://')
-      ? dao.metadata.slice(7)
-      : dao.metadata
-    axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
-      .then(({data}) => {
-        console.log('Description: ', data.description)
-        if (loading) setDescription(data.description)
-        setLoading(false)
-      })
-    .catch((error) => console.log('Axios error: ', error))
+    if (dao.metadata) {
+      const metadataURI = dao.metadata
+        .includes('ipfs://')
+        ? dao.metadata.slice(7)
+        : dao.metadata
+      axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
+        .then(({data}) => {
+          console.log('Description: ', data.description)
+          if (loading) setDescription(data.description)
+          setLoading(false)
+        })
+      .catch((error) => console.log('Axios error: ', error))
+    }
     return () => { setLoading(false) }
   }, [])
   
@@ -45,7 +46,9 @@ export default function DAOCard({dao, navigation}: any) {
           <Text className="text-xl font-bold">{dao.name}</Text>
         </View>
         <View className="flex-row justify-between pt-2">
-          <Text className="font-light flex-1"> {description}</Text> 
+          <Text className="font-light flex-1"> 
+            {description?.length > 100 ? description.substring(0, 99)+'...' : description}
+          </Text> 
           <View className="flex-row items-center">
             <Ionicons name="megaphone-outline" size={18} color="black" />
             <Text className="font-lg font-light p-1">{dao.proposals.length}</Text>

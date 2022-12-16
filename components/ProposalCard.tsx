@@ -8,9 +8,9 @@ const ProposalCard = ({proposal, navigation}: any) => {
   }
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
-  const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).div(voteCount).mul(100).toNumber();
-  const abstainVotes = proposal.abstain && !voteCount.eq(0) && BigNumber.from(proposal.abstain).div(voteCount).mul(100).toNumber();
-  const noVotes = !voteCount.eq(0) && BigNumber.from(proposal.no).div(voteCount).mul(100).toNumber();
+  const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).mul(100).div(voteCount).toNumber();
+  const abstainVotes = proposal.abstain && !voteCount.eq(0) && BigNumber.from(proposal.abstain).mul(100).div(voteCount).toNumber();
+  const noVotes = !voteCount.eq(0) && BigNumber.from(proposal.no).mul(100).div(voteCount).toNumber();
   const censusPercentage = !census.eq(0) &&
      (!voteCount.eq(0) ? voteCount.mul(100).div(census).toNumber() : 0);
   
@@ -36,7 +36,6 @@ const ProposalCard = ({proposal, navigation}: any) => {
       onPress={proposalClicked}>
       <View className="block m-2 p-4 bg-white border border-gray-200 rounded-lg shadow-md">
         <View className="flex-row items-center">
-          <Ionicons name="megaphone-outline" size={20} color="black" />
           <Text className="text-md text-xl font-bold pl-1">{proposal.title}</Text>
         </View>
 
