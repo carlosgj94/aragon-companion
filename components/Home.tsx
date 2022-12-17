@@ -82,13 +82,25 @@ export default function HomeView({navigation}: any) {
   return (
     <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
       { loading && <ActivityIndicator size="large"/> }
-      { lastDAOs?.length > 0 && <FlatList
-        data={lastDAOs}
-        renderItem={({item}) => <DAOCard dao={item} navigation={navigation}/>}
-        keyExtractor={dao => dao.id}
-      />
+      { lastDAOs?.length > 0 
+        ? <FlatList
+            data={lastDAOs}
+            renderItem={({item}) => <DAOCard dao={item} navigation={navigation}/>}
+            keyExtractor={dao => dao.id}
+          />
+        : <NoFavs/>
       }
     </SafeAreaView>
+  )
+}
+
+const NoFavs = () => {
+  return (
+    <View className="flex-1 items-center text-center">
+      <Text className="text-5xl p-2">🦅</Text>
+      <Text className="text-xl color-blue-500">No favs found</Text>
+      <Text>Head to the Discover page and fav some DAOs.</Text>
+    </View>
   )
 }
 

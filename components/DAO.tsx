@@ -40,7 +40,7 @@ const erc20Query = gql`
 
 const multisigPluginQuery = gql`
   query plugin($dao: String!) {
-    allowlistPlugins(where: { daos_: {dao: $dao}}) {
+    addresslistPlugins(where: { daos_: {dao: $dao}}) {
       id
       minDuration
       totalSupportThresholdPct
@@ -125,7 +125,7 @@ export default function DAOView({navigation, route}: any) {
       multisigPluginQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
-      if (loading) setDaoPlugin(data['allowlistPlugins'][0])
+      if (loading) setDaoPlugin(data['addresslistPlugins'][0])
     })
   }, [])
   
