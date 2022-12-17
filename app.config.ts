@@ -4,7 +4,7 @@ export default {
     scheme: "wmw",
     name: "eaglet",
     slug: "eaglet",
-    version: "1.0.0",
+    version: "1.0.1",
     orientation: "portrait",
     icon: "./assets/icon.png",
     userInterfaceStyle: "light",
@@ -20,6 +20,7 @@ export default {
       "**/*"
     ],
     ios: {
+       "bundleIdentifier": "aragonEaglet",
       "supportsTablet": true
     },
     android: {
@@ -32,7 +33,10 @@ export default {
       favicon: "./assets/favicon.png"
     },
     extra: {
-      alchemyKey: process.env.ALCHEMY_KEY
+      alchemyKey: process.env.ALCHEMY_KEY,
+      "eas": {
+        "projectId": "66d4a070-1838-4911-9b7f-56464c802524"
+      }
     }
   }
 }

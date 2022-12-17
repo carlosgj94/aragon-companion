@@ -14,19 +14,27 @@ enum ProposalStatus {
 }
 
 enum ProposalWinner {
-  yes = 'passed',
-  no = 'denied',
-  abstain = 'abstained',
+  yes = 'Proposal passed',
+  no = 'Proposal denied',
+  abstain = 'Proposal abstained',
+  nonQuorum = 'Quorum not achieved',
+  minParticipation = 'Min participation not reached'
 }
 
-const BottomBar = ({proposal, proposalStatus}) => {
+const BottomBar = ({proposal, proposalStatus, plugin}) => {
   const proposalWinner = () => {
     const yes = BigNumber.from(proposal.yes)
     const no = BigNumber.from(proposal.no)
     const abstain = BigNumber.from(proposal.no)
     const census = BigNumber.from(proposal.census)
     const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
-
+    
+    const minParticipation = BigNumber.from(plugin.totalSupportThresholdPct)
+    const quorum = BigNumber.from(plugin.relativeSupportThresholdPct)
+    
+    if (minParticipation.gt(voteCount)) return ProposalWinner.minParticipation
+    if (quorum.gt(yes) && quorum.gt(no) && quorum.gt(quorum)) return ProposalWinner.nonQuorum
+    
     return (yes.gt(no) && yes.gt(abstain))
       ? ProposalWinner.yes 
       : (no.gt(yes) && no.gt(abstain)) 
@@ -48,8 +56,8 @@ const BottomBar = ({proposal, proposalStatus}) => {
   else return (
     <View className="justify-end h-24 flex-row">
       <View className={`${proposalWinner() === ProposalWinner.yes ? 'bg-green-300' : proposalWinner() === ProposalWinner.no ? 'bg-red-300' : 'bg-gray-300'} flex-1 border-r border-t-2 border-gray-100`}>
-        <Text className="text-4xl italic font-bold color-white text-center pt-4">
-          Proposal { proposalWinner().toString() }
+        <Text className="text-2xl italic font-bold color-white text-center pt-4">
+           { proposalWinner().toString() }
         </Text>
       </View>
     </View>
@@ -77,7 +85,7 @@ const VoteBar = ({title, votes, color}) => {
 }
 
 export default function ProposalView({navigation, route}: any) {
-  const { proposal } = route.params;
+  const { proposal, plugin } = route.params;
 
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
@@ -86,9 +94,6 @@ export default function ProposalView({navigation, route}: any) {
   const noVotes = !voteCount.eq(0) && BigNumber.from(proposal.no).mul(100).div(voteCount).toNumber();
   const censusPercentage = !census.eq(0) &&
      (!voteCount.eq(0) ? voteCount.mul(100).div(census).toNumber() : 0);
-  console.log('Vout count: ', proposal.voteCount, !voteCount.eq(0))
-  console.log('Yes:', BigNumber.from(proposal.yes).mul(100).div(voteCount).toNumber())
-  console.log('No:', noVotes, proposal.no)
   
   const proposalStatus: ProposalStatus = dayjs().isBefore(dayjs(proposal.startDate * 1000))
     ? ProposalStatus.ToBeStarted
@@ -125,7 +130,7 @@ export default function ProposalView({navigation, route}: any) {
         </View>
       </View>
       <View className="flex-1"/>
-      <BottomBar proposal={proposal} proposalStatus={proposalStatus}/>
+      <BottomBar proposal={proposal} proposalStatus={proposalStatus} plugin={plugin}/>
     </View>
   );
 }

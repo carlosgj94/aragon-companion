@@ -2,9 +2,9 @@ import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BigNumber} from 'ethers';
 
-const ProposalCard = ({proposal, navigation}: any) => {
+const ProposalCard = ({proposal, navigation, plugin}: any) => {
   const proposalClicked = () => {
-    navigation.push('Proposal', {proposal, navigation});
+    navigation.push('Proposal', {proposal, navigation, plugin});
   }
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);

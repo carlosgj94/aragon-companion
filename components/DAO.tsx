@@ -8,6 +8,17 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import ProposalCard from './ProposalCard';
 
+const erc20VotingPluginQuery = gql`
+  query plugin($dao: String!) {
+    erc20VotingPlugins(where: { daos_: {dao: $dao}}) {
+      id
+      minDuration
+      totalSupportThresholdPct
+      relativeSupportThresholdPct
+    }
+  }
+`
+
 const erc20Query = gql`
   query proposals($limit:Int!, $dao:String!) {
     erc20VotingProposals(first: $limit, where: {dao: $dao}) {
@@ -23,6 +34,17 @@ const erc20Query = gql`
       no
       abstain
       open
+    }
+  }
+`
+
+const multisigPluginQuery = gql`
+  query plugin($dao: String!) {
+    allowlistPlugins(where: { daos_: {dao: $dao}}) {
+      id
+      minDuration
+      totalSupportThresholdPct
+      relativeSupportThresholdPct
     }
   }
 `
@@ -44,6 +66,14 @@ const multisigQuery = gql`
     }
   }
 `
+
+type Plugin = {
+  id: string;
+  minDuration: string;
+  totalSupportThresholdPct: string;
+  relativeSupportThresholdPct: string;
+}
+
 type Proposal = {
   id: string;
   creator: string;
@@ -83,10 +113,21 @@ export default function DAOView({navigation, route}: any) {
   const [loading, setLoading] = useState<boolean>(true);
   const [proposals, setProposals] = useState<Proposal[]>();
   const [proposalsWithMetadata, setProposalsWithMetadata] = useState<ProposalWithMetadata[]>();
+  const [daoPlugin, setDaoPlugin] = useState<Plugin>();
 
   const backPressed = () => {
     navigation.pop();
   }
+  
+  const fetchMultisigPlugin = useCallback(async () => {
+    request(
+      'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
+      multisigPluginQuery,
+      {limit: 10, dao: dao.id}
+    ).then((data) => {
+      if (loading) setDaoPlugin(data['allowlistPlugins'][0])
+    })
+  }, [])
   
   const fetchMultisigProposals = useCallback(async () => {
     request(
@@ -98,6 +139,15 @@ export default function DAOView({navigation, route}: any) {
     })
   }, [])
   
+  const fetchErc20Plugin = useCallback(async () => {
+    request(
+      'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
+      erc20VotingPluginQuery,
+      {limit: 10, dao: dao.id}
+    ).then((data) => {
+      if (loading) setDaoPlugin(data['erc20VotingPlugins'][0])
+    })
+  }, [])
   
   const fetchErc20Proposals = useCallback(async () => {
     request(
@@ -128,7 +178,10 @@ export default function DAOView({navigation, route}: any) {
   
   useEffect(() => {
     if (!proposals?.length) fetchErc20Proposals();
-    if (proposals?.length) fetchProposalsMetadata();
+    if (proposals?.length) { 
+    fetchProposalsMetadata();
+      fetchMultisigPlugin();
+    } else fetchErc20Plugin();
     
     return () => { setLoading(false) }
   }, [proposals])
@@ -157,7 +210,7 @@ export default function DAOView({navigation, route}: any) {
       { loading && <ActivityIndicator size="large"/> }
       { proposalsWithMetadata?.length && <FlatList
         data={proposalsWithMetadata}
-        renderItem={({item}) => <ProposalCard proposal={item} navigation={navigation}/>}
+        renderItem={({item}) => <ProposalCard plugin={daoPlugin} proposal={item} navigation={navigation}/>}
         keyExtractor={(proposal) => proposal.id}
       />}
   </View>
