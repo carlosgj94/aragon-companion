@@ -13,6 +13,48 @@ enum ProposalStatus {
   Finished
 }
 
+enum ProposalWinner {
+  yes = 'passed',
+  no = 'denied',
+  abstain = 'abstained',
+}
+
+const BottomBar = ({proposal, proposalStatus}) => {
+  const proposalWinner = () => {
+    const yes = BigNumber.from(proposal.yes)
+    const no = BigNumber.from(proposal.no)
+    const abstain = BigNumber.from(proposal.no)
+    const census = BigNumber.from(proposal.census)
+    const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
+
+    return (yes.gt(no) && yes.gt(abstain))
+      ? ProposalWinner.yes 
+      : (no.gt(yes) && no.gt(abstain)) 
+        ? ProposalWinner.no
+        : ProposalWinner.abstain
+  }
+
+  if (proposalStatus !== ProposalStatus.Finished) return (
+      <View className="justify-end h-24 flex-row">
+        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-green-500' : 'bg-green-200'} flex-1 border-r border-t-2 border-gray-100`}>
+          <Text className="text-4xl italic font-bold color-white text-center pt-4">Yes</Text>
+        </View>
+
+        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-red-500' : 'bg-red-200'} flex-1 border-l border-t-2 border-gray-100`}>
+          <Text className="text-4xl italic font-bold color-white text-center pt-4">No</Text>
+        </View>
+      </View>
+  )
+  else return (
+    <View className="justify-end h-24 flex-row">
+      <View className={`${proposalWinner() === ProposalWinner.yes ? 'bg-green-300' : proposalWinner() === ProposalWinner.no ? 'bg-red-300' : 'bg-gray-300'} flex-1 border-r border-t-2 border-gray-100`}>
+        <Text className="text-4xl italic font-bold color-white text-center pt-4">
+          Proposal { proposalWinner().toString() }
+        </Text>
+      </View>
+    </View>
+  )
+}
 
 const VoteBar = ({title, votes, color}) => {
   return (
@@ -83,15 +125,7 @@ export default function ProposalView({navigation, route}: any) {
         </View>
       </View>
       <View className="flex-1"/>
-      <View className="justify-end h-24 flex-row">
-        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-green-500' : 'bg-green-200'} flex-1 border-r border-t-2 border-gray-100`}>
-          <Text className="text-4xl italic font-bold color-white text-center pt-4">Yes</Text>
-        </View>
-
-        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-red-500' : 'bg-red-200'} flex-1 border-l border-t-2 border-gray-100`}>
-          <Text className="text-4xl italic font-bold color-white text-center pt-4">No</Text>
-        </View>
-      </View>
+      <BottomBar proposal={proposal} proposalStatus={proposalStatus}/>
     </View>
   );
 }
