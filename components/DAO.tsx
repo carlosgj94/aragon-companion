@@ -3,7 +3,8 @@ import { request, gql } from 'graphql-request';
 import { useState, useEffect, useCallback } from 'react';
 import StarButton from './StarButton';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
+import * as Sharing from 'expo-sharing';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import ProposalCard from './ProposalCard';
@@ -110,6 +111,7 @@ type ProposalWithMetadata = {
 
 export default function DAOView({navigation, route}: any) {
   const {dao, metadata} = route.params;
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState<boolean>(true);
   const [proposals, setProposals] = useState<Proposal[]>();
   const [proposalsWithMetadata, setProposalsWithMetadata] = useState<ProposalWithMetadata[]>();
@@ -187,26 +189,35 @@ export default function DAOView({navigation, route}: any) {
   }, [proposals])
 
   return (
-    <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
-      <View className="block border-b border-gray-200 shadow-md">
-        <View className="flex-row items-center justify-between">
-          <TouchableWithoutFeedback
-            onPress={backPressed}>
-            <Ionicons className="ml-2" name="arrow-back" size={30} color="black" />
-          </TouchableWithoutFeedback>
+    <SafeAreaView className="bg-gray-50 flex-1" edges={['left', 'right']}>
+      <View className="mb-3 p-2 bg-blue-100 rounded-3xl shadow shadow-blue-700/50">
+        <View className="flex-row grid grid-cols-4" style={{paddingTop: insets.top}}>
+          <View className="w-2/5">
+            <TouchableWithoutFeedback
+              onPress={backPressed}>
+              <Ionicons className="ml-2" name="arrow-back" size={30} color="black" />
+            </TouchableWithoutFeedback>
+          </View>
           <LinearGradient 
               colors={['rgb(59,130,246)', 'rgb(255,255,255)']}
-              className="m-2 p-2 rounded-full rotate-45">
+              className="m-2 p-2 rounded-full rotate-45 grow-0">
             <Text className="w-7 h-7 text-center font-bold text-xl">{dao.name.substring(0, 1)}</Text>
           </LinearGradient>
-          <StarButton className="m-3" daoId={dao.id}/>
+          <View className="flex-row w-2/5 justify-end">
+            <StarButton className="m-3 justify-self-end" daoId={dao.id}/>
+            <TouchableWithoutFeedback 
+              className="justify-self-end"
+              onPress={() => Sharing.shareAsync('https://zaragoza-staging.aragon.org/#/daos/goerli/'+dao.id)}>
+              <Ionicons className="ml-2 mr-2" name="share-outline" size={30} color={"black"} />
+            </TouchableWithoutFeedback>
+          </View>
         </View>
         <View className="m-2">
-            <Text className="text-2xl font-bold">{dao.name}</Text>
-            <Text className="text-md font-light pt-1"> {metadata}</Text> 
+            <Text className="text-2xl font-black">{dao.name}</Text>
+            <Text className="text-md font-normal pt-2 pb-2">{metadata}</Text> 
         </View>
-    </View>
-    <View className="bg-gray-100 flex-1">
+      </View>
+    <View className="bg-gray-50 flex-1">
       { loading && <ActivityIndicator size="large"/> }
       { proposalsWithMetadata?.length && <FlatList
         data={proposalsWithMetadata}
