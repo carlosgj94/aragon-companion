@@ -33,9 +33,10 @@ export default {
       favicon: "./assets/favicon.png"
     },
     extra: {
-      alchemyKey: process.env.ALCHEMY_KEY,
-      "eas": {
-        "projectId": "66d4a070-1838-4911-9b7f-56464c802524"
+      alchemyKeyGoerli: process.env.ALCHEMY_KEY_GOERLI,
+      alchemyKeyMainnet: process.env.ALCHEMY_KEY_MAINNET,
+      eas: {
+        projectId: "66d4a070-1838-4911-9b7f-56464c802524"
       }
     }
   }

@@ -8,7 +8,7 @@ import WalletConnectProvider from '@walletconnect/react-native-dapp'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { WagmiConfig, createClient, configureChains, createStorage } from 'wagmi'
 import { noopStorage } from '@wagmi/core'
-import { goerli } from 'wagmi/chains';
+import { goerli, mainnet } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy'
 import { useAccount, useBalance, useConnect, useDisconnect, useSigner, useEnsName, chain } from 'wagmi'
 import { createAsyncStoragePersister } from 'react-query/createAsyncStoragePersister'
@@ -27,21 +27,15 @@ import HomeView from './components/Home';
 import DiscoverView from './components/Discover';
 import DAOView from './components/DAO';
 import ProposalView from './components/Proposal';
+import ProfileView from './components/Profile';
 
-const ALCHEMY_KEY = Constants?.manifest?.extra?.alchemyKey;
+const ALCHEMY_KEY_GOERLI = Constants?.manifest?.extra?.alchemyKeyGoerli;
+const ALCHEMY_KEY_MAINNET = Constants?.manifest?.extra?.alchemyKeyMainnnet;
 
 import { LogBox } from 'react-native';
 
 // God pls forbid
 LogBox.ignoreLogs([ 'Non-serializable values were found in the navigation state', ]);
-
-function ProfileScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Profile!</Text>
-    </View>
-  );
-}
 
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -52,13 +46,12 @@ const asyncStoragePersistor = createAsyncStoragePersister({
   storage: AsyncStorage,
 })
 
+const { chains, provider } = configureChains(
+  [mainnet, goerli],
+  [alchemyProvider({ apiKey: ALCHEMY_KEY_MAINNET}), alchemyProvider({ apiKey: ALCHEMY_KEY_GOERLI})],
+)
 
 export default function App() {
-  const { chains, provider } = configureChains(
-    [goerli],
-    [alchemyProvider({ apiKey: ALCHEMY_KEY })],
-  )
-
   const client = createClient({
     persister: asyncStoragePersistor,
     storage: createStorage({
@@ -86,11 +79,13 @@ const Navigation = () => {
   const connector = useWalletConnect()
 
   const { connect } = useConnect({
-    chainId: chain.goerli.id,
     connector: new WalletConnectConnector({
-      // chains: [chain.goerli],
+      chains,
       options: {
-        rpc: {5: "https://eth-goerli.g.alchemy.com/v2/"+ALCHEMY_KEY},
+        rpc: {
+          5: "https://eth-goerli.g.alchemy.com/v2/"+ALCHEMY_KEY_GOERLI,
+          1: 'https://eth-mainnet.g.alchemy.com/v2/'+ALCHEMY_KEY_MAINNET
+        },
         qrcode: true,
         connector,
       },
@@ -103,24 +98,12 @@ const Navigation = () => {
   // const { data: signer, isError, isLoading } = useSigner()
 
   useEffect(() => {
-    console.log(connector)
     if (connector?.accounts?.length && !account) {
-      console.log('connecting')
       connect()
     } else {
       disconnect()
     }
   }, [connector])
-
-  const HeaderRight = () => (
-    <>
-      {
-        account?.address
-          ?  (<EnsView address={account?.address}/>)
-          : ( <Button className="bg-black" title="Connect" onPress={() => connector?.connect()} /> )
-      }
-    </>
-  )
 
   const HomeStackComponent = () => {
     return (
@@ -222,25 +205,14 @@ const Navigation = () => {
          />
         <Tab.Screen 
           name="ProfileView" 
-          component={ProfileScreen}
+          children={(props) => <ProfileView {...props} connector={connector} account={account} />}
           options={{
             title: 'Profile',
-            headerRight: HeaderRight
+            headerShown: false
           }}
        />
       </Tab.Navigator>
     </NavigationContainer>
-  )
-}
-
-const EnsView = ({address}) => {
-  const { data, isError, isLoading } = useEnsName({ address, chainId: 1 })
-  return (
-    <>
-    { 
-      !isError ? (<Text>{data}</Text>) : (<Text>{address}</Text>)
-    }
-    </>
   )
 }
 
