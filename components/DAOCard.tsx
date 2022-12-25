@@ -18,7 +18,7 @@ export default function DAOCard({dao, navigation}: any) {
         .includes('ipfs://')
         ? dao.metadata.slice(7)
         : dao.metadata
-      axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
+      axios.get('https://ipfs.io/ipfs/'+metadataURI)
         .then(({data}) => {
           console.log('Description: ', data.description)
           if (loading) setDescription(data.description)

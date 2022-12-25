@@ -4,33 +4,8 @@ import { request, gql } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
 import SearchBar from "react-native-dynamic-search-bar";
 import DAOCard from './DAOCard';
+import { SearchDiscoverQuery, DiscoverQuery } from '../queries'
 
-const searchQuery= gql`
-   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $search: String) {
-    daos(first: $limit, skip: $skip, where: {name_contains_nocase: $search}){
-      id
-      name
-      metadata
-      proposals(first: $limit) {
-        id
-      }
-     }
-    }
-`
-
-
-const query = gql`
-   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $orderItem: Dao_orderBy) {
-    daos(first: $limit, skip: $skip, orderDirection: $direction, orderBy: $orderItem){
-      id
-      name
-      metadata
-      proposals(first: $limit) {
-        id
-      }
-     }
-    }
-`
 
 type Proposal = {
   id: string;
@@ -53,7 +28,7 @@ export default function HomeView({navigation}: any) {
     setLoading(true);
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      searchQuery,
+      SearchDiscoverQuery,
       {limit: 10, skip: 0, direction: 'desc', search: searchInput}
     ).then((data) => {
       if (loading) setLastDAOs(data['daos'])
@@ -64,7 +39,7 @@ export default function HomeView({navigation}: any) {
   const daoList = useCallback(() => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      query,
+      DiscoverQuery,
       {limit: 30, skip: 0, direction: 'desc', sortBy: 'createdAt'}
     ).then((data) => {
       if (loading) setLastDAOs(data['daos']);

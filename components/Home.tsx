@@ -4,24 +4,9 @@ import { useEffect, useCallback, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DAOCard from './DAOCard';
+import { HomeDAOs } from '../queries'
 
-const query = gql`
-   query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $daos: [String]!) {
-    daos(first: $limit, skip: $skip, orderDirection: $direction, where: {id_in: $daos}){
-      id
-      name
-      metadata
-      token
-      proposals(first: $limit) {
-        id
-        creator
-        metadata
-        executed
-        createdAt
-      }
-     }
-    }
-`
+
 
 type Proposal = {
   id: string;
@@ -60,7 +45,7 @@ export default function HomeView({navigation}: any) {
     const starred = await getStorageStars()
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      query,
+      HomeDAOs,
       {limit: 30, skip: 0, direction: 'desc', daos: starred}
     ).then((data) => {
       if (loading) setLastDAOs(data['daos'])
@@ -72,7 +57,7 @@ export default function HomeView({navigation}: any) {
   useEffect(() => {
     //if (!lastDAOs)
     if (loading) daoList();
-    const unsubscrive = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus', () => {
       setLoading(true);
       daoList();
     });

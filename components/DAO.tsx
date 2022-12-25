@@ -1,72 +1,14 @@
 import {View, Text, FlatList, TouchableWithoutFeedback, ActivityIndicator} from 'react-native';
-import { request, gql } from 'graphql-request';
 import { useState, useEffect, useCallback } from 'react';
 import StarButton from './StarButton';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import * as Sharing from 'expo-sharing';
+import { request } from 'graphql-request';
+import {Erc20VotingPluginQuery, Erc20Query, MultisigPluginQuery, MultisigQuery} from '../queries'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import ProposalCard from './ProposalCard';
-
-const erc20VotingPluginQuery = gql`
-  query plugin($dao: String!) {
-    erc20VotingPlugins(where: { daos_: {dao: $dao}}) {
-      id
-      minDuration
-      totalSupportThresholdPct
-      relativeSupportThresholdPct
-    }
-  }
-`
-
-const erc20Query = gql`
-  query proposals($limit:Int!, $dao:String!) {
-    erc20VotingProposals(first: $limit, where: {dao: $dao}) {
-      id
-      creator
-      metadata
-      executed
-      startDate
-      endDate
-      voteCount
-      census
-      yes
-      no
-      abstain
-      open
-    }
-  }
-`
-
-const multisigPluginQuery = gql`
-  query plugin($dao: String!) {
-    addresslistPlugins(where: { daos_: {dao: $dao}}) {
-      id
-      minDuration
-      totalSupportThresholdPct
-      relativeSupportThresholdPct
-    }
-  }
-`
-
-const multisigQuery = gql`
-  query proposals($limit:Int!, $dao:String!) {
-    addresslistProposals(first: $limit, where: {dao: $dao}) {
-      id
-      creator
-      metadata
-      executed
-      startDate
-      endDate
-      voteCount
-      census
-      yes
-      no
-      open
-    }
-  }
-`
 
 type Plugin = {
   id: string;
@@ -124,7 +66,7 @@ export default function DAOView({navigation, route}: any) {
   const fetchMultisigPlugin = useCallback(async () => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      multisigPluginQuery,
+      MultisigPluginQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
       if (loading) setDaoPlugin(data['addresslistPlugins'][0])
@@ -134,7 +76,7 @@ export default function DAOView({navigation, route}: any) {
   const fetchMultisigProposals = useCallback(async () => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      multisigQuery,
+      MultisigQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
       if (loading) setProposals(data['addresslistProposals'])
@@ -144,7 +86,7 @@ export default function DAOView({navigation, route}: any) {
   const fetchErc20Plugin = useCallback(async () => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      erc20VotingPluginQuery,
+      Erc20VotingPluginQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
       if (loading) setDaoPlugin(data['erc20VotingPlugins'][0])
@@ -154,7 +96,7 @@ export default function DAOView({navigation, route}: any) {
   const fetchErc20Proposals = useCallback(async () => {
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
-      erc20Query,
+      Erc20Query,
       {limit: 10, dao: dao.id}
     ).then((data) => {
       if (data['erc20VotingProposals'].length && loading) setProposals(data['erc20VotingProposals'])
@@ -168,7 +110,9 @@ export default function DAOView({navigation, route}: any) {
         .includes('ipfs://')
         ? proposal.metadata.slice(7)
         : proposal.metadata
+      console.log('MetadataURI: ', metadataURI)
       const response = await axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
+        .catch((error) => {console.log(error)})
       return {
         ...proposal,
         ...response['data']
