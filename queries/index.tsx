@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 
-export const erc20VotingPluginQuery = gql`
+export const Erc20VotingPluginQuery = gql`
   query plugin($dao: String!) {
     erc20VotingPlugins(where: { daos_: {dao: $dao}}) {
       id
@@ -11,7 +11,7 @@ export const erc20VotingPluginQuery = gql`
   }
 `
 
-export const erc20Query = gql`
+export const Erc20Query = gql`
   query proposals($limit:Int!, $dao:String!) {
     erc20VotingProposals(first: $limit, where: {dao: $dao}) {
       id
@@ -30,7 +30,7 @@ export const erc20Query = gql`
   }
 `
 
-export const multisigPluginQuery = gql`
+export const MultisigPluginQuery = gql`
   query plugin($dao: String!) {
     addresslistPlugins(where: { daos_: {dao: $dao}}) {
       id
@@ -41,7 +41,7 @@ export const multisigPluginQuery = gql`
   }
 `
 
-export const multisigQuery = gql`
+export const MultisigQuery = gql`
   query proposals($limit:Int!, $dao:String!) {
     addresslistProposals(first: $limit, where: {dao: $dao}) {
       id
@@ -59,7 +59,7 @@ export const multisigQuery = gql`
   }
 `
 
-export const homeDAOs = gql`
+export const HomeDAOs = gql`
    query daos ($limit:Int!, $skip: Int!, $direction: OrderDirection!, $daos: [String]!) {
     daos(first: $limit, skip: $skip, orderDirection: $direction, where: {id_in: $daos}){
       id

@@ -2,10 +2,11 @@ import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BigNumber} from 'ethers';
 
-const ProposalCard = ({proposal, navigation, plugin}: any) => {
+const ProposalCard = ({proposal, navigation, plugin, dao}: any) => {
   const proposalClicked = () => {
-    navigation.push('Proposal', {proposal, navigation, plugin});
+    navigation.push('Proposal', {proposal, navigation, plugin, dao});
   }
+    console.log('Plugin In ProposalCard: ', plugin)
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
   const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).mul(100).div(voteCount).toNumber();

@@ -9,6 +9,8 @@ import {Erc20VotingPluginQuery, Erc20Query, MultisigPluginQuery, MultisigQuery} 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import ProposalCard from './ProposalCard';
+import Constants from 'expo-constants';
+const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
 
 type Plugin = {
   id: string;
@@ -69,6 +71,7 @@ export default function DAOView({navigation, route}: any) {
       MultisigPluginQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
+      console.log('Plugin AddressList: ', data['addresslistPlugins'])
       if (loading) setDaoPlugin(data['addresslistPlugins'][0])
     })
   }, [])
@@ -89,7 +92,8 @@ export default function DAOView({navigation, route}: any) {
       Erc20VotingPluginQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
-      if (loading) setDaoPlugin(data['erc20VotingPlugins'][0])
+      if (data['erc20VotingPlugins'].length && loading) setDaoPlugin(data['erc20VotingPlugins'][0])
+      else fetchMultisigPlugin()
     })
   }, [])
   
@@ -110,8 +114,7 @@ export default function DAOView({navigation, route}: any) {
         .includes('ipfs://')
         ? proposal.metadata.slice(7)
         : proposal.metadata
-      console.log('MetadataURI: ', metadataURI)
-      const response = await axios.get('https://api.ipfsbrowser.com/ipfs/get.php?hash='+metadataURI)
+      const response = await axios.get(IPFS_URL+metadataURI)
         .catch((error) => {console.log(error)})
       return {
         ...proposal,
@@ -125,8 +128,7 @@ export default function DAOView({navigation, route}: any) {
   useEffect(() => {
     if (!proposals?.length) fetchErc20Proposals();
     if (proposals?.length) { 
-    fetchProposalsMetadata();
-      fetchMultisigPlugin();
+      fetchProposalsMetadata();
     } else fetchErc20Plugin();
     
     return () => { setLoading(false) }
@@ -165,7 +167,7 @@ export default function DAOView({navigation, route}: any) {
       { loading && <ActivityIndicator size="large"/> }
       { proposalsWithMetadata?.length && <FlatList
         data={proposalsWithMetadata}
-        renderItem={({item}) => <ProposalCard plugin={daoPlugin} proposal={item} navigation={navigation}/>}
+        renderItem={({item}) => <ProposalCard dao={dao} plugin={daoPlugin} proposal={item} navigation={navigation}/>}
         keyExtractor={(proposal) => proposal.id}
       />}
   </View>

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { TouchableWithoutFeedback, View, Text} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Constants from 'expo-constants';
+const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
 
 type Metadata = {
   description: string;
@@ -18,9 +20,8 @@ export default function DAOCard({dao, navigation}: any) {
         .includes('ipfs://')
         ? dao.metadata.slice(7)
         : dao.metadata
-      axios.get('https://ipfs.io/ipfs/'+metadataURI)
+      axios.get(IPFS_URL+metadataURI)
         .then(({data}) => {
-          console.log('Description: ', data.description)
           if (loading) setDescription(data.description)
           setLoading(false)
         })

@@ -1,12 +1,10 @@
 import { Button, View, Text, FlatList, TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
-import { request, gql } from 'graphql-request';
+import { request } from 'graphql-request';
 import { useEffect, useCallback, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DAOCard from './DAOCard';
 import { HomeDAOs } from '../queries'
-
-
 
 type Proposal = {
   id: string;

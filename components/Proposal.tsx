@@ -1,9 +1,11 @@
-import {View, Text} from 'react-native';
+import {View, Text, TouchableWithoutFeedback} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BigNumber} from 'ethers';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {useState, useEffect, useCallback} from 'react';
+import * as Sharing from 'expo-sharing';
+
 
 dayjs.extend(relativeTime)
 
@@ -29,17 +31,18 @@ const BottomBar = ({proposal, proposalStatus, plugin}) => {
     const census = BigNumber.from(proposal.census)
     const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
     
-    const minParticipation = BigNumber.from(plugin.totalSupportThresholdPct)
-    const quorum = BigNumber.from(plugin.relativeSupportThresholdPct)
+    console.log('Plugin: ', plugin)
+      const minParticipation = BigNumber.from(plugin.totalSupportThresholdPct)
+      const quorum = BigNumber.from(plugin.relativeSupportThresholdPct)
     
-    if (minParticipation.gt(voteCount)) return ProposalWinner.minParticipation
-    if (quorum.gt(yes) && quorum.gt(no) && quorum.gt(quorum)) return ProposalWinner.nonQuorum
+      if (minParticipation.gt(voteCount)) return ProposalWinner.minParticipation
+      if (quorum.gt(yes) && quorum.gt(no) && quorum.gt(quorum)) return ProposalWinner.nonQuorum
     
-    return (yes.gt(no) && yes.gt(abstain))
-      ? ProposalWinner.yes 
-      : (no.gt(yes) && no.gt(abstain)) 
-        ? ProposalWinner.no
-        : ProposalWinner.abstain
+      return (yes.gt(no) && yes.gt(abstain))
+        ? ProposalWinner.yes 
+        : (no.gt(yes) && no.gt(abstain)) 
+          ? ProposalWinner.no
+          : ProposalWinner.abstain
   }
 
   if (proposalStatus !== ProposalStatus.Finished) return (
@@ -85,7 +88,7 @@ const VoteBar = ({title, votes, color}) => {
 }
 
 export default function ProposalView({navigation, route}: any) {
-  const { proposal, plugin } = route.params;
+  const { proposal, plugin, dao } = route.params;
 
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
@@ -101,10 +104,18 @@ export default function ProposalView({navigation, route}: any) {
       ? ProposalStatus.Open
       : ProposalStatus.Finished
 
+  https://zaragoza-staging.aragon.org/#/daos/goerli/0x0f24540527627f4c045a25f298446e4896d5ba28/governance/proposals/0x98a7428635602fc7024e700227dfb11fe0b29ab2_0x0
   return (
       <View className="flex-1 bg-gray-100">
       <View className="p-2">
-        <Text className="text-md mt-2 mb-1 text-2xl font-bold color-gray-900">{proposal.title}</Text>
+        <View className="flex-row items-center">
+          <Text className="text-md mt-2 mb-1 text-2xl font-bold color-gray-900">{proposal.title}</Text>
+          <TouchableWithoutFeedback 
+            className="justify-self-end"
+            onPress={() => Sharing.shareAsync('https://zaragoza-staging.aragon.org/#/daos/goerli/'+dao.id+'governance/proposals/'+proposal.id)}>
+            <Ionicons className="m-3 w-50" name="share-outline" size={28} color={"black"} />
+          </TouchableWithoutFeedback>
+        </View>
         <View className="flex-row mb-2">
           <Text className="color-gray-500">Published by </Text>
           <Text className="color-blue-500">{proposal.creator.substring(0, 5)}...{proposal.creator.substring(38)}</Text>

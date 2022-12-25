@@ -35,6 +35,7 @@ export default {
     extra: {
       alchemyKeyGoerli: process.env.ALCHEMY_KEY_GOERLI,
       alchemyKeyMainnet: process.env.ALCHEMY_KEY_MAINNET,
+      ipfsURL: process.env.IPFS_URL,
       eas: {
         projectId: "66d4a070-1838-4911-9b7f-56464c802524"
       }
