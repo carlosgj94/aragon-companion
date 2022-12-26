@@ -10,6 +10,8 @@ import { WagmiConfig, createClient, configureChains, createStorage } from 'wagmi
 import { noopStorage } from '@wagmi/core'
 import { goerli, mainnet } from 'wagmi/chains';
 import { alchemyProvider } from 'wagmi/providers/alchemy'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
+
 import { useAccount, useBalance, useConnect, useDisconnect, useSigner, useEnsName, chain } from 'wagmi'
 import { createAsyncStoragePersister } from 'react-query/createAsyncStoragePersister'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
@@ -48,7 +50,11 @@ const asyncStoragePersistor = createAsyncStoragePersister({
 
 const { chains, provider } = configureChains(
   [mainnet, goerli],
-  [alchemyProvider({ apiKey: ALCHEMY_KEY_MAINNET}), alchemyProvider({ apiKey: ALCHEMY_KEY_GOERLI})],
+  [jsonRpcProvider({
+    rpc: (chain) => ({
+      http: `https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY_MAINNET}`
+    })
+  })]
 )
 
 export default function App() {
@@ -205,7 +211,7 @@ const Navigation = () => {
          />
         <Tab.Screen 
           name="ProfileView" 
-          children={(props) => <ProfileView {...props} connector={connector} account={account} />}
+          children={(props) => <ProfileView {...props} connector={connector} />}
           options={{
             title: 'Profile',
             headerShown: false

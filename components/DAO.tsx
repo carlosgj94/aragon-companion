@@ -71,7 +71,6 @@ export default function DAOView({navigation, route}: any) {
       MultisigPluginQuery,
       {limit: 10, dao: dao.id}
     ).then((data) => {
-      console.log('Plugin AddressList: ', data['addresslistPlugins'])
       if (loading) setDaoPlugin(data['addresslistPlugins'][0])
     })
   }, [])
