@@ -32,7 +32,7 @@ import ProposalView from './components/Proposal';
 import ProfileView from './components/Profile';
 
 const ALCHEMY_KEY_GOERLI = Constants?.manifest?.extra?.alchemyKeyGoerli;
-const ALCHEMY_KEY_MAINNET = Constants?.manifest?.extra?.alchemyKeyMainnnet;
+const ALCHEMY_KEY_MAINNET = Constants?.manifest?.extra?.alchemyKeyMainnet;
 
 import { LogBox } from 'react-native';
 

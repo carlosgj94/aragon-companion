@@ -11,7 +11,6 @@ const ProfileHeader = ({address}) => {
   const [avatar, setAvatar] = useState<string>();
   
   const getEnsValues = useCallback(async () => {
-    // const address = provider.getAddress()
     const ens = await provider.lookupAddress(address)
     const avatar = await provider.getAvatar(address)
     setName(ens!)
