@@ -1,20 +1,23 @@
 import {View, Button, TouchableWithoutFeedback, Text, Image} from 'react-native'
 import { useAccount, useBalance, useDisconnect, useEnsName, useEnsAvatar, useProvider, chain } from 'wagmi'
 import {useCallback, useEffect, useState} from 'react'
-// import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
-import ethers from 'ethers';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {AvatarImage, ConnectAccountComponent, AddressComponent} from './ProfileComponents';
 
 
 const ProfileHeader = ({address}) => {
   const provider = useProvider()
   const [name, setName] = useState<string>();
   const [avatar, setAvatar] = useState<string>();
-  
+  const [loading, setLoading] = useState<boolean>(true);
+   
   const getEnsValues = useCallback(async () => {
     const ens = await provider.lookupAddress(address)
     const avatar = await provider.getAvatar(address)
+    console.log(avatar)
     setName(ens!)
     setAvatar(avatar!)
+    setLoading(false)
   }, [])
 
   useEffect(() => {
@@ -22,32 +25,26 @@ const ProfileHeader = ({address}) => {
   }, [])
   
   return (
-    <View>
-      { avatar && <Image
-          style={{width: '100%', height: '50%'}}
-         source={{uri: avatar}} />}
-      <Text>{address}</Text>
-      { name && <Text>{name}</Text>}
-      { avatar && <Text>{avatar}</Text>}
+    <View className="flex">
+      <AvatarImage avatar={avatar} />
+      <AddressComponent address={address} name={name} />
     </View>    
   )
 }
 
+
 export default function ProfileView({connector})  {
   const { data: account } = useAccount()
 
-  if (!account?.address)
-   return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-         <Text>Connect your account:</Text>
-         <Button className="bg-black" title="Connect" onPress={() => connector?.connect()} />
-        <Button title="Disconnect" onPress={() => connector?.killSession()} />
-      </View>
-    )
-  else return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Disconnect" onPress={() => connector?.killSession()} />
+  return (
+    <SafeAreaView className="bg-white flex-1" edges={['top', 'left', 'right']}>
+      { account?.address && (
+        <View className="flex-row justify-end">
+          <Button title="Disconnect" onPress={() => connector?.killSession()} />
+        </View>
+      )}
+      {!account?.address && <ConnectAccountComponent connector={connector}/> }
       { account?.address && <ProfileHeader  address={account?.address}/>}
-    </View>
+    </SafeAreaView>
   )
 }
