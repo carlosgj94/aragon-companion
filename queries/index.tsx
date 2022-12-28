@@ -102,3 +102,30 @@ export const DiscoverQuery = gql`
      }
     }
 `
+
+export const ProfileERC20VoteQuery = gql`
+  query proposals ($limit: Int!, $voter: String!) {
+    erc20Votes(first: $limit, where: {voter_contains_nocase: $voter}) {
+      id
+      voter {
+        id
+        address
+      }
+      proposal {
+        id
+        metadata
+        startDate
+        endDate
+        yes
+        no
+        abstain
+        voteCount
+        census
+        dao {
+          id
+          name
+        }
+      }
+    }
+  }
+`

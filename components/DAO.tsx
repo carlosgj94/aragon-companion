@@ -11,6 +11,8 @@ import axios from 'axios';
 import ProposalCard from './ProposalCard';
 import Constants from 'expo-constants';
 const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
+const IPFS_KEY = Constants?.manifest?.extra?.ipfsKey;
+const requestConfig = {'headers': {'X-API-KEY': IPFS_KEY}}
 
 type Plugin = {
   id: string;
@@ -113,7 +115,7 @@ export default function DAOView({navigation, route}: any) {
         .includes('ipfs://')
         ? proposal.metadata.slice(7)
         : proposal.metadata
-      const response = await axios.get(IPFS_URL+metadataURI)
+      const response = await axios.post(IPFS_URL+metadataURI, {}, requestConfig)
         .catch((error) => {console.log(error)})
       return {
         ...proposal,

@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Constants from 'expo-constants';
 const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
+const IPFS_KEY = Constants?.manifest?.extra?.ipfsKey;
 
 type Metadata = {
   description: string;
@@ -20,7 +21,8 @@ export default function DAOCard({dao, navigation}: any) {
         .includes('ipfs://')
         ? dao.metadata.slice(7)
         : dao.metadata
-      axios.get(IPFS_URL+metadataURI)
+      const requestConfig = {'headers': {'X-API-KEY': IPFS_KEY}}
+      axios.post(IPFS_URL+metadataURI, {}, requestConfig)
         .then(({data}) => {
           if (loading) setDescription(data.description)
           setLoading(false)
