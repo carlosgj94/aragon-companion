@@ -5,6 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { request } from 'graphql-request';
 import {AvatarImage, ConnectAccountComponent, AddressComponent} from './ProfileComponents';
 import {ProfileERC20VoteQuery} from '../queries';
+import axios from 'axios';
+import Constants from 'expo-constants';
+const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
+const IPFS_KEY = Constants?.manifest?.extra?.ipfsKey;
+const requestConfig = {'headers': {'X-API-KEY': IPFS_KEY}}
 
 
 const ProfileHeader = ({address}) => {
@@ -59,7 +64,7 @@ const UserProposals = ({address}) => {
   }, [])
   
   return (
-    <View className="">
+    <View className="flex flex-grow m-2">
       {erc20Proposals?.length && <FlatList
         data={erc20Proposals}
         renderItem={({item}) => <ProposalWithDAO proposal={item} /> }
@@ -71,9 +76,26 @@ const UserProposals = ({address}) => {
 }
 
 const ProposalWithDAO = ({proposal}) => {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [metadata, setMetadata] = useState<any>();
+  
+  useEffect(() => {
+      const metadataURI = proposal.proposal.metadata
+        .includes('ipfs://')
+        ? proposal.proposal.metadata.slice(7)
+        : proposal.proposal.metadata
+    console.log("M Uri: ", metadataURI)
+      axios.post(IPFS_URL+metadataURI, {}, requestConfig)
+        .then(({data}) => {
+          if (loading) setMetadata(data)
+          console.log('Metadata: ', data)
+          setLoading(false)
+        })
+      .catch((error) => console.log('Axios error: ', error))
+  }, [])
   return (
     <View className="block m-2 p-4 bg-white border border-gray-200 rounded-lg shadow-md">
-      <Text>{proposal.proposal.metadata}</Text>
+      {metadata && <Text>{metadata.title}</Text>}
       <Text>{proposal.proposal.dao.name}</Text>
     </View>
   )
