@@ -42,7 +42,7 @@ const ProposalCard = ({proposal, navigation, plugin, dao}: ProposalCardProps) =>
     <TouchableWithoutFeedback
       onPress={proposalClicked}>
       <View className="block m-2 p-3 bg-white border border-gray-200 rounded-lg shadow-md">
-        { proposal.dao.name && (
+        { proposal?.dao?.name && (
           <View className="flex-row justify-end">
             <Text className="color-blue-500 text-sm">{proposal.dao.name}</Text>
           </View>
