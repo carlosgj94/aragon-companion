@@ -13,46 +13,7 @@ import Constants from 'expo-constants';
 const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
 const IPFS_KEY = Constants?.manifest?.extra?.ipfsKey;
 const requestConfig = {'headers': {'X-API-KEY': IPFS_KEY}}
-
-type Plugin = {
-  id: string;
-  minDuration: string;
-  totalSupportThresholdPct: string;
-  relativeSupportThresholdPct: string;
-}
-
-type Proposal = {
-  id: string;
-  creator: string;
-  metadata: string;
-  executed: boolean;
-  createdAt: string;
-  startDate: string;
-  endDate: string;
-  voteCount: string;
-  census: string;
-  yes: string;
-  no: string;
-  abstain: string;
-  open: string;
-}
-type ProposalWithMetadata = {
-  id: string;
-  creator: string;
-  // metadata: string;
-  resources: string[];
-  summary: string;
-  title: string;
-  executed: boolean;
-  createdAt: string;
-  startDate: string;
-  endDate: string;
-  voteCount: string;
-  yes: string;
-  no: string;
-  abstain: string;
-  open: string;
-}
+import {Proposal, Plugin} from '../types';
 
 
 export default function DAOView({navigation, route}: any) {
@@ -60,7 +21,7 @@ export default function DAOView({navigation, route}: any) {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState<boolean>(true);
   const [proposals, setProposals] = useState<Proposal[]>();
-  const [proposalsWithMetadata, setProposalsWithMetadata] = useState<ProposalWithMetadata[]>();
+  const [proposalsWithMetadata, setProposalsWithMetadata] = useState<Proposal[]>();
   const [daoPlugin, setDaoPlugin] = useState<Plugin>();
 
   const backPressed = () => {
@@ -110,7 +71,7 @@ export default function DAOView({navigation, route}: any) {
   }, [])
   
   const fetchProposalsMetadata = useCallback(async () => {
-    const proposalsMetadata: ProposalWithMetadata[] = await Promise.all(proposals.map(async (proposal: any) => {
+    const proposalsMetadata: Proposal[] = await Promise.all(proposals.map(async (proposal: any) => {
       const metadataURI = proposal.metadata
         .includes('ipfs://')
         ? proposal.metadata.slice(7)

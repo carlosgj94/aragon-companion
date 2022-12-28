@@ -1,12 +1,18 @@
 import {View, Text, FlatList, TouchableWithoutFeedback} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BigNumber} from 'ethers';
+import {Proposal, DAO, Plugin } from '../types';
 
-const ProposalCard = ({proposal, navigation, plugin, dao}: any) => {
+type ProposalCardProps = {
+  proposal: Proposal;
+  navigation: any;
+  plugin: Plugin;
+  dao: DAO;
+};
+const ProposalCard = ({proposal, navigation, plugin, dao}: ProposalCardProps) => {
   const proposalClicked = () => {
     navigation.push('Proposal', {proposal, navigation, plugin, dao});
   }
-    console.log('Plugin In ProposalCard: ', plugin)
   const census = BigNumber.from(proposal.census)
   const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
   const yesVotes = !voteCount.eq(0) && BigNumber.from(proposal.yes).mul(100).div(voteCount).toNumber();
@@ -35,7 +41,12 @@ const ProposalCard = ({proposal, navigation, plugin, dao}: any) => {
   return (
     <TouchableWithoutFeedback
       onPress={proposalClicked}>
-      <View className="block m-2 p-4 bg-white border border-gray-200 rounded-lg shadow-md">
+      <View className="block m-2 p-3 bg-white border border-gray-200 rounded-lg shadow-md">
+        { proposal.dao.name && (
+          <View className="flex-row justify-end">
+            <Text className="color-blue-500 text-sm">{proposal.dao.name}</Text>
+          </View>
+        )}
         <View className="flex-row items-center">
           <Text className="text-md text-xl font-bold pl-1">{proposal.title}</Text>
         </View>

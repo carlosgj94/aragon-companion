@@ -5,19 +5,8 @@ import { useEffect, useCallback, useState } from 'react';
 import SearchBar from "react-native-dynamic-search-bar";
 import DAOCard from './DAOCard';
 import { SearchDiscoverQuery, DiscoverQuery } from '../queries'
+import {DAO} from '../types';
 
-
-type Proposal = {
-  id: string;
-}
-
-type DAO = {
-  id: string;
-  metadata: string;
-  name: string;
-  token: string;
-  proposals: Proposal[];
-};
 
 export default function HomeView({navigation}: any) {
   const [loading, setLoading] = useState<boolean>(true);

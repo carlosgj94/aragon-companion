@@ -42,6 +42,7 @@ LogBox.ignoreLogs([ 'Non-serializable values were found in the navigation state'
 const Tab = createBottomTabNavigator();
 const HomeStack = createNativeStackNavigator();
 const DiscoverStack = createNativeStackNavigator();
+const ProfileStack = createNativeStackNavigator();
 
  
 const asyncStoragePersistor = createAsyncStoragePersister({
@@ -168,6 +169,28 @@ const Navigation = () => {
       </DiscoverStack.Navigator>
     )
   }
+  
+  const ProfileStackComponent = () => {
+    return (
+      <ProfileStack.Navigator>
+        <ProfileStack.Screen 
+          name="Profile"
+           options={{
+            headerShown: false
+          }}>
+          {(props) => <ProfileView {...props} connector={connector}/>} 
+        </ProfileStack.Screen>
+        <ProfileStack.Screen 
+          name="Proposal" 
+          component={ProposalView}
+          options={{
+            presentation: 'modal',
+            headerShown: false
+          }}
+       />
+      </ProfileStack.Navigator>
+    )
+  }
 
   return (
     <NavigationContainer>
@@ -211,7 +234,7 @@ const Navigation = () => {
          />
         <Tab.Screen 
           name="ProfileView" 
-          children={(props) => <ProfileView {...props} connector={connector} />}
+          children={ProfileStackComponent}
           options={{
             title: 'Profile',
             headerShown: false

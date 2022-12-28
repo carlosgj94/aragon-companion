@@ -107,13 +107,14 @@ export const ProfileERC20VoteQuery = gql`
   query proposals ($limit: Int!, $voter: String!) {
     erc20Votes(first: $limit, where: {voter_contains_nocase: $voter}) {
       id
-      voter {
-        id
-        address
-      }
+      vote
       proposal {
         id
         metadata
+        creator
+        executed
+        open
+        createdAt
         startDate
         endDate
         yes
@@ -124,6 +125,10 @@ export const ProfileERC20VoteQuery = gql`
         dao {
           id
           name
+        }
+        plugin {
+          relativeSupportThresholdPct
+          totalSupportThresholdPct
         }
       }
     }

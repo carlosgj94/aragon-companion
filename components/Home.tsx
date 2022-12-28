@@ -5,23 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DAOCard from './DAOCard';
 import { HomeDAOs } from '../queries'
-
-type Proposal = {
-  id: string;
-  creator: string;
-  metadata: string;
-  executed: boolean;
-  createdAt: string;
-}
-
-type DAO = {
-  id: string;
-  metadata: string;
-  name: string;
-  token: string;
-  proposals: Proposal[];
-};
-
+import { DAO } from '../types';
 
 export default function HomeView({navigation}: any) {
   const [loading, setLoading] = useState<boolean>(true);

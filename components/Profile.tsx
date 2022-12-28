@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { request } from 'graphql-request';
 import {AvatarImage, ConnectAccountComponent, AddressComponent} from './ProfileComponents';
 import {ProfileERC20VoteQuery} from '../queries';
+import {Proposal} from '../types';
+import ProposalCard from './ProposalCard';
 import axios from 'axios';
 import Constants from 'expo-constants';
 const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
@@ -39,21 +41,28 @@ const ProfileHeader = ({address}) => {
   )
 }
 
-const UserProposals = ({address}) => {
+const UserProposals = ({address, navigation}) => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [erc20Proposals, setErc20Proposals] = useState<any[]>();
-  const [multiProposals, setMultiProposals] = useState<any[]>();
+  const [erc20Proposals, setErc20Proposals] = useState<Proposal[]>();
+  // const [multiProposals, setMultiProposals] = useState<any[]>();
 
   const fetchErc20Votes = useCallback(async () => {
-    console.log(address)
     request(
       'https://api.thegraph.com/subgraphs/name/aragon/aragon-zaragoza-goerli',
       ProfileERC20VoteQuery,
       {voter: address, limit: 10}
     ).then((data) => {
       if (loading) {
-        console.log('Propsals: ', data)
-        setErc20Proposals(data['erc20Votes'])
+        const proposals: Proposal[] = data['erc20Votes'].map((prop: any) => {
+          return {
+            vote: prop.vote,
+            ...prop.proposal,
+            plugin: {
+              ...prop.proposal.plugin
+            }
+          }
+        })
+        setErc20Proposals(proposals)
         setLoading(false);
       }
     }).catch((error) => console.log('error: ', error))
@@ -67,7 +76,8 @@ const UserProposals = ({address}) => {
     <View className="flex flex-grow m-2">
       {erc20Proposals?.length && <FlatList
         data={erc20Proposals}
-        renderItem={({item}) => <ProposalWithDAO proposal={item} /> }
+        renderItem={({item}) => <ProposalWithDAO proposal={item} navigation={navigation}/> }
+        //renderItem={({item}) => <ProposalCard proposal={item} dao={item.dao} navigation={navigation} plugin={item.plugin}/> }
         keyExtractor={(proposal) => proposal.id}
       />
       }
@@ -75,34 +85,45 @@ const UserProposals = ({address}) => {
   )
 }
 
-const ProposalWithDAO = ({proposal}) => {
+type ProposalWithDAOProps = {
+  proposal: Proposal;
+  navigation: any;
+};
+const ProposalWithDAO = ({proposal, navigation}: ProposalWithDAOProps) => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [metadata, setMetadata] = useState<any>();
+  const [proposalWithMetadata, setProposalWithMetadata] = useState<Proposal>();
   
   useEffect(() => {
-      const metadataURI = proposal.proposal.metadata
+      const metadataURI = proposal.metadata
         .includes('ipfs://')
-        ? proposal.proposal.metadata.slice(7)
-        : proposal.proposal.metadata
-    console.log("M Uri: ", metadataURI)
+        ? proposal.metadata.slice(7)
+        : proposal.metadata
       axios.post(IPFS_URL+metadataURI, {}, requestConfig)
         .then(({data}) => {
-          if (loading) setMetadata(data)
-          console.log('Metadata: ', data)
+          if (loading) setProposalWithMetadata({
+            ...proposal,
+            ...data
+          })
           setLoading(false)
         })
       .catch((error) => console.log('Axios error: ', error))
   }, [])
   return (
-    <View className="block m-2 p-4 bg-white border border-gray-200 rounded-lg shadow-md">
-      {metadata && <Text>{metadata.title}</Text>}
-      <Text>{proposal.proposal.dao.name}</Text>
-    </View>
+    <>
+      {proposalWithMetadata && 
+        <ProposalCard 
+          proposal={proposalWithMetadata}
+          dao={proposalWithMetadata.dao}
+          navigation={navigation}
+          plugin={proposalWithMetadata.plugin}
+        />
+      }
+    </>
   )
 }
 
 
-export default function ProfileView({connector})  {
+export default function ProfileView({connector, navigation})  {
   const { data: account } = useAccount()
 
   return (
@@ -114,7 +135,7 @@ export default function ProfileView({connector})  {
       )}
       {!account?.address && <ConnectAccountComponent connector={connector}/> }
       { account?.address && <ProfileHeader  address={account?.address}/>}
-      { account?.address && <UserProposals address={account?.address}/>}
+      { account?.address && <UserProposals address={account?.address} navigation={navigation}/>}
     </SafeAreaView>
   )
 }

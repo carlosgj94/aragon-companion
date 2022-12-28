@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Constants from 'expo-constants';
 const IPFS_URL = Constants?.manifest?.extra?.ipfsURL;
 const IPFS_KEY = Constants?.manifest?.extra?.ipfsKey;
+const requestConfig = {'headers': {'X-API-KEY': IPFS_KEY}}
 
 type Metadata = {
   description: string;
@@ -21,7 +22,6 @@ export default function DAOCard({dao, navigation}: any) {
         .includes('ipfs://')
         ? dao.metadata.slice(7)
         : dao.metadata
-      const requestConfig = {'headers': {'X-API-KEY': IPFS_KEY}}
       axios.post(IPFS_URL+metadataURI, {}, requestConfig)
         .then(({data}) => {
           if (loading) setDescription(data.description)
@@ -65,7 +65,7 @@ export default function DAOCard({dao, navigation}: any) {
           </View>
 
           <View className="flex-row items-center">
-            <Text className="font-lg font-light p-1">${dao.proposals.length}</Text>
+            <Text className="font-lg font-light p-1">$0</Text>
             <Ionicons name="cash-outline" size={18} color="black" />
           </View>
         </View>
