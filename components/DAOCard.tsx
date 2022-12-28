@@ -60,7 +60,9 @@ export default function DAOCard({dao, navigation}: any) {
           </View>
 
           <View className="flex-row items-center">
-            <Text className="font-lg font-light p-1">{dao.proposals.length}</Text>
+            <Text className="font-lg font-light p-1">{
+              dao.members ? dao.members.length : 0
+            }</Text>
             <Ionicons name="person-outline" size={18} color="black" />
           </View>
 

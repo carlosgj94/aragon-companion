@@ -73,6 +73,21 @@ export const HomeDAOs = gql`
         executed
         createdAt
       }
+      plugins {
+        plugin {
+          ... on ERC20VotingPlugin {
+            members {
+              address
+            }
+          }
+          ... on AddresslistPlugin {
+            id
+            members {
+              address
+            }
+          }
+        }
+      }
      }
     }
 `
@@ -82,6 +97,21 @@ export const SearchDiscoverQuery = gql`
       id
       name
       metadata
+      plugins {
+        plugin {
+          ... on ERC20VotingPlugin {
+            members {
+              address
+            }
+          }
+          ... on AddresslistPlugin {
+            id
+            members {
+              address
+            }
+          }
+        }
+      }
       proposals(first: $limit) {
         id
       }
@@ -96,6 +126,22 @@ export const DiscoverQuery = gql`
       id
       name
       metadata
+      plugins {
+        plugin {
+          ... on ERC20VotingPlugin {
+            members {
+              address
+            }
+          }
+          ... on AddresslistPlugin {
+            id
+            members {
+              address
+            }
+          }
+        }
+      }
+
       proposals(first: $limit) {
         id
       }

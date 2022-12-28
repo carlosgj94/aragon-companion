@@ -30,7 +30,16 @@ export default function HomeView({navigation}: any) {
       HomeDAOs,
       {limit: 30, skip: 0, direction: 'desc', daos: starred}
     ).then((data) => {
-      if (loading) setLastDAOs(data['daos'])
+      const daos = data['daos'].map(dao => {
+        let members = []
+        if (dao.plugins[0].plugin.members?.length)
+          members = dao.plugins[0].plugin.members?.flatMap(item => item.address)
+        return {
+          members, 
+          ...dao
+        }
+      })
+      if (loading) setLastDAOs(daos)
       setLoading(false);
     })
 

@@ -20,7 +20,16 @@ export default function HomeView({navigation}: any) {
       SearchDiscoverQuery,
       {limit: 10, skip: 0, direction: 'desc', search: searchInput}
     ).then((data) => {
-      if (loading) setLastDAOs(data['daos'])
+      const daos = data['daos'].map(dao => {
+        let members = []
+        if (dao.plugins[0].plugin.members?.length)
+          members = dao.plugins[0].plugin.members?.flatMap(item => item.address)
+        return {
+          members, 
+          ...dao
+        }
+      })
+      if (loading) setLastDAOs(daos)
       setLoading(false);
     })
   }, [searchInput])
@@ -31,7 +40,16 @@ export default function HomeView({navigation}: any) {
       DiscoverQuery,
       {limit: 30, skip: 0, direction: 'desc', sortBy: 'createdAt'}
     ).then((data) => {
-      if (loading) setLastDAOs(data['daos']);
+      const daos = data['daos'].map(dao => {
+        let members = []
+        if (dao.plugins[0].plugin.members?.length)
+          members = dao.plugins[0].plugin.members?.flatMap(item => item.address)
+        return {
+          members, 
+          ...dao
+        }
+      })
+      if (loading) setLastDAOs(daos);
       setLoading(false);
     })
 

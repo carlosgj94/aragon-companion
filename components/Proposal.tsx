@@ -104,11 +104,10 @@ export default function ProposalView({navigation, route}: any) {
       ? ProposalStatus.Open
       : ProposalStatus.Finished
 
-  https://zaragoza-staging.aragon.org/#/daos/goerli/0x0f24540527627f4c045a25f298446e4896d5ba28/governance/proposals/0x98a7428635602fc7024e700227dfb11fe0b29ab2_0x0
   return (
       <View className="flex-1 bg-gray-100">
       <View className="p-2">
-        <View className="flex-row items-center">
+        <View className="flex-row items-center justify-between">
           <Text className="text-md mt-2 mb-1 text-2xl font-bold color-gray-900">{proposal.title}</Text>
           <TouchableWithoutFeedback 
             className="justify-self-end"
