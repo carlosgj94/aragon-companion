@@ -1,10 +1,17 @@
-import {View, Text, TouchableWithoutFeedback} from 'react-native';
+import {View, Text, TouchableWithoutFeedback, Alert} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {BigNumber} from 'ethers';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import {useState, useEffect, useCallback} from 'react';
+import { useAccount, useContract, useSigner, useProvider, useContractWrite } from 'wagmi';
 import * as Sharing from 'expo-sharing';
+import MajorityVotingABI from '../abis/MajorityVoting.json'
+import ethers from 'ethers';
+
+const abi: string[] = [
+  "function vote(uint256 _voteId,uint8 _choice,bool _executesIfDecided) public"
+]
 
 
 dayjs.extend(relativeTime)
@@ -24,36 +31,74 @@ enum ProposalWinner {
 }
 
 const BottomBar = ({proposal, proposalStatus, plugin}) => {
+  /*
+  const provider = useProvider()
+  const { data: signer, isError, isLoading } = useSigner()
+  const {data: address}= useAccount()
+  const { data, write, isSuccess } = useContractWrite({
+    mode: 'recklesslyUnprepared',
+    address: plugin.id,
+    abi: MajorityVotingABI,
+    functionName: 'vote',
+    // signerOrProvider: provider,
+  })
+  */
+
   const proposalWinner = () => {
-    const yes = BigNumber.from(proposal.yes)
-    const no = BigNumber.from(proposal.no)
-    const abstain = BigNumber.from(proposal.no)
-    const census = BigNumber.from(proposal.census)
-    const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
+    try {
+      const yes = BigNumber.from(proposal.yes)
+      const no = BigNumber.from(proposal.no)
+      const abstain = BigNumber.from(proposal.abstain)
+      const census = BigNumber.from(proposal.census)
+      const voteCount = proposal.voteCount ? BigNumber.from(proposal.voteCount) : BigNumber.from(0);
     
-    console.log('Plugin: ', plugin)
       const minParticipation = BigNumber.from(plugin.totalSupportThresholdPct)
       const quorum = BigNumber.from(plugin.relativeSupportThresholdPct)
-    
+
       if (minParticipation.gt(voteCount)) return ProposalWinner.minParticipation
       if (quorum.gt(yes) && quorum.gt(no) && quorum.gt(quorum)) return ProposalWinner.nonQuorum
-    
+  
       return (yes.gt(no) && yes.gt(abstain))
         ? ProposalWinner.yes 
         : (no.gt(yes) && no.gt(abstain)) 
           ? ProposalWinner.no
           : ProposalWinner.abstain
+    } catch(err) {
+      return ProposalWinner.minParticipation
+    }
+  }
+  
+  const userVoted = async (option: boolean) => {
+    /*
+    if (!address) Alert.alert('Sign in with Ethereum in the Profile View')
+    else {
+      if (signer) {
+        // const PluginContract = new ethers.Contract(plugin.id, abi, provider)
+        
+        // const canVote = await PluginContract.canVote(proposal.id, address)
+        console.log('data: ', data)
+        console.log('write: ', write)
+        console.log('isSuccess: ', isSuccess)
+        write()
+        // console.log('Can Vote: ', canVote)
+      }
+    }
+    */
   }
 
   if (proposalStatus !== ProposalStatus.Finished) return (
       <View className="justify-end h-24 flex-row">
-        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-green-500' : 'bg-green-200'} flex-1 border-r border-t-2 border-gray-100`}>
-          <Text className="text-4xl italic font-bold color-white text-center pt-4">Yes</Text>
-        </View>
+        <TouchableWithoutFeedback onPress={async () => await userVoted(true)}>
+          <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-green-500' : 'bg-green-200'} flex-1 border-r border-t-2 border-gray-100`}>
+            <Text className="text-4xl italic font-bold color-white text-center pt-4">Yes</Text>
+          </View>
+        </TouchableWithoutFeedback>
 
-        <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-red-500' : 'bg-red-200'} flex-1 border-l border-t-2 border-gray-100`}>
-          <Text className="text-4xl italic font-bold color-white text-center pt-4">No</Text>
-        </View>
+        <TouchableWithoutFeedback onPress={() => userVoted(1)}>
+          <View className={`${proposalStatus === ProposalStatus.Open ? 'bg-red-500' : 'bg-red-200'} flex-1 border-l border-t-2 border-gray-100`}>
+            <Text className="text-4xl italic font-bold color-white text-center pt-4">No</Text>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
   )
   else return (

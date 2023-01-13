@@ -121,7 +121,7 @@ export default function DAOView({navigation, route}: any) {
           </View>
         </View>
         <View className="m-2">
-            <Text className="text-2xl font-black">{dao.name}</Text>
+            <Text className="text-2xl font-black">{dao.name.replace('_', ' ')}</Text>
             <Text className="text-md font-normal pt-2 pb-2">{metadata}</Text> 
         </View>
       </View>

@@ -46,7 +46,7 @@ export default function DAOCard({dao, navigation}: any) {
               className="m-1 p-1 rounded-full rotate-45">
             <Text className="w-7 h-7 text-center font-bold text-lg">{dao.name.substring(0, 1)}</Text>
           </LinearGradient>
-          <Text className="text-xl font-black color-gray-900">{dao.name}</Text>
+          <Text className="text-xl font-black color-gray-900">{dao.name.replace('_', ' ')}</Text>
         </View>
         <View className="flex-row justify-between pt-2">
           <Text className="font-light flex-1"> 
